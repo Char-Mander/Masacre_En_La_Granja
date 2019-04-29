@@ -8,12 +8,12 @@
 	<script>
 		window.onload = () => {
 			var login = document.getElementById("login");
-			login.setCustomValidity("no se si esta libre");
+			login.setCustomValidity("No sé aún si está libre");
 
 			login.onchange = () => {
 				const v = login.value;
 				fetch("/user/checkExistingUser/"+v).then((response) => {
-					login.setCustomValidity(response.ok ? "" : "está ocupado");
+					login.setCustomValidity(response.ok ? "" : "Este nick está ocupado");
 				});
 
 			};
@@ -23,7 +23,7 @@
 				if (pass.value.length >= 8) {
 					pass.setCustomValidity("");
 				} else {
-					pass.setCustomValidity("demasiado fácil");
+					pass.setCustomValidity("Contraseña demasiado corta");
 				}
 
 			};
