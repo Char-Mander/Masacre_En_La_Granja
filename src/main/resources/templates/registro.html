@@ -12,7 +12,7 @@
 
 			login.onchange = () => {
 				const v = login.value;
-				fetch("/user/loginOk/"+v).then((response) => {
+				fetch("/user/checkExistingUser/"+v).then((response) => {
 					login.setCustomValidity(response.ok ? "" : "está ocupado");
 				});
 
