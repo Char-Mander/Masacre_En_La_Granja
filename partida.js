@@ -1,5 +1,5 @@
 actualRol= "VAMPIRE";
-            actualTurn =-1;
+            endGame=0;
             numPlayers = 8;
             players= [[]];
             for(i=0; i<numPlayers; i++)
@@ -46,6 +46,7 @@ actualRol= "VAMPIRE";
             {
                 players[clientPlayer][1] = 1;
                 //Envía jugada al servidor vía Ajax
+                noteEntry("Your vote is for Player "+ (victim_+1));
                 playJSON = {
                     rol: 'POPULAR_VOTE',
                     client: clientPlayer,
@@ -57,7 +58,7 @@ actualRol= "VAMPIRE";
             function vampirePlay(victim_)
             {
                 players[clientPlayer][1] = 1;
-                logEntry("You pray is Player "+ (victim_+1));
+                noteEntry("Your victim is Player "+ (victim_+1));
                 //Envía jugada al servidor vía Ajax
                 playJSON = {
                     rol: 'VAMPIRE',
@@ -72,6 +73,7 @@ actualRol= "VAMPIRE";
             {
                 players[clientPlayer][1] = 1;
                 //Envía jugada al servidor vía Ajax
+                noteEntry("You shot Player "+ (victim_+1));
                 playJSON = {
                     rol: 'HUNTER',
                     client: clientPlayer,
@@ -94,15 +96,9 @@ actualRol= "VAMPIRE";
                 var newState = JSON.parse(newStateJSON);
                 switch(newState.id)
                 {
-                    case "VAMPIRES_EVEN":
-                        repeatPlay("VAMPIRE");
-                        break;
                     case "VAMPIRES_VOTED":
                         actualRol = newState.newRol;
                         resetPlay();
-                        break;
-                    case "POPULAR_EVEN":
-                        repeatPlay("VAMPIRE");
                         break;
                     case "POPULAR_VOTED":
                         actualRol = newState.newRol;
@@ -112,9 +108,20 @@ actualRol= "VAMPIRE";
                         actualRol = newState.newRol;
                         resetPlay();
                         break;
+                    case "FARMERS_WON":
+                        actualRol="";
+                        noteEntry("The vampires have been eliminated. FARMERS WIN!");
+                        endGame =1;
+                        break;
+                    case "VAMPIRES_WON":
+                        actualRol="";
+                        noteEntry("The weak farmers have fallen. VAMPIRES WIN!");
+                        endGame=1;
+                        break;
+                    
                 }
                 if(newState.deaths.length >0) updateDeaths(newState.deaths);
-                printLogs(newState.logs);
+                if(!endGame)printLogs(newState.logs);
             }
 
             function repeatPlay(rol)
@@ -137,6 +144,7 @@ actualRol= "VAMPIRE";
             {
                 for(i=0; i < deaths.length; i++){
                     players[deaths[i]][0] = "DEAD";
+                    noteEntry("Player "+ (deaths[i]+1) +" has died!");
                     document.getElementById('player'+(deaths[i]+1)+'card').innerHTML = "DEAD";
                 }
             }
@@ -148,9 +156,11 @@ actualRol= "VAMPIRE";
                                                                 + date.getMinutes()+":"
                                                                 + date.getSeconds()+"  "
                                                                 +message;
+            }
+            function noteEntry(message)
+            {
                 document.getElementById('note').innerHTML = message;
             }
-
             function printLogs(logs)
             {
                 for(i =0; i< logs.length; i++){

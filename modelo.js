@@ -1,6 +1,6 @@
 //Informacion de la partida
 actualRol_= "VAMPIRE";
-lastRol_="";
+dia=0;//0 noche , 1 dia
 numPlayers__= 8;
 players_= [];
 players_[0] = "VAMPIRE";
@@ -11,7 +11,6 @@ players_[4] = "FARMER";
 players_[5] = "VAMPIRE";
 players_[6] = "FARMER";
 players_[7] = "FARMER";
-vampireAmount = 2;
 votation = [];
 votes = [];
 
@@ -56,21 +55,23 @@ function recivePlay(playJSON)//Tambien recibirá el estado de la partida
 function popularMove(play, object)
 {
 	votation.push(play.victim);
-	if(votation.length == countMaxVotes)
+	if(votation.length == countMaxVotes())
 	{
 		resetVotes();
 		i =evenRepeatVotationCount();
 		if(i<0)
 		{
 			//Repite Votacion
-			object.logs.push("Popular voting tied! Decide again!");
-			object.id = 'POPULAR_EVEN';
+			object.logs.push("Votation tied and there is no time to vote again...");
+			object.id = 'POPULAR_VOTED';
+            startNight(object);
 		}
 		else
 		{
 			object.deaths.push(i);
+            object.logs.push("The farmers decided hang Player "+ (play.victim+1));
 			object.id = 'POPULAR_VOTED';
-			startNight(object);//Termina la noche (provisional, esto lo acabará haciendo la bruja)
+			startNight(object);
 		}
 		votation = [];
 	}
@@ -88,14 +89,11 @@ function hunterMove(play, object)
 	players_[play.client] = "DEAD";
 	//El cazador muere
 	object.deaths.push(play.client);
-	processDeaths(object);
-	if(lastRol_ == "POPULAR_VOTATION"){//Si le ha matado el pueblo, empieza la noche
+	if(dia){//Si le ha matado el pueblo, empieza la noche
 		startNight(object);
 	}
 	else{//Si le han matado los vampiros, termina la noche
-		lastRol_="HUNTER";
-		actualRol_="POPULAR_VOTATION";
-		object.newRol = actualRol_;
+        endNight(object);
 	}
 
 }
@@ -103,15 +101,16 @@ function hunterMove(play, object)
 function vampireMove(play, object)
 {
 	votation.push(play.victim);
-	if(votation.length == vampireAmount)
+	if(votation.length == countVampires())
 	{
 		resetVotes();
 		i =evenRepeatVotationCount();
 		if(i<0)
 		{
 			//Repite Votacion
-			object.logs.push("Vampiric voting tied! Hunt again!");
-			object.id = 'VAMPIRE_EVEN';
+			object.logs.push("Vampires couldn't decide who to kill!");
+			object.id = 'VAMPIRES_VOTED';
+            endNight(object);
 		}
 		else
 		{
@@ -156,22 +155,27 @@ function evenRepeatVotationCount()
 
 function endNight(object)
 {
-	lastRol_ = "VAMPIRE" //Provisional, será la bruja
-	actualRol_ = "POPULAR_VOTATION";
-	object.newRol = actualRol_;
-	object.logs.push("The farmers wake up");
-	processDeaths(object);
-	checkWin(object);
+    processDeaths(object);
+    if(object.newRol != "HUNTER"){
+        dia = 1;
+        actualRol_ = "POPULAR_VOTATION";
+        object.newRol = actualRol_;
+        object.logs.push("The farmers wake up");
+    }
+	
 	
 
 }
 
 function startNight(object)
 {
-	object.logs.push("The farmers go to bed...");
-	lastRol_ = actualRol_;
-	actualRol_ = "VAMPIRE";//Provisional, será el estrcito primer rol
-	object.newRol = actualRol_;
+    processDeaths(object);
+    if(object.newRol != "HUNTER"){
+        dia = 0;
+        object.logs.push("The farmers go to bed...");
+        actualRol_ = "VAMPIRE";//Provisional, será el estrcito primer rol
+        object.newRol = actualRol_;
+    }
 }
 
 function processDeaths(object)
@@ -179,7 +183,7 @@ function processDeaths(object)
 	for(i=0; i < object.deaths.length; i++){
 		//Se recorren los jugadores que han muerto esa noche
 		if(players_[object.deaths[i]] == "HUNTER" ){//Si el cazador muere, será su turno
-			object.logs.push("Player " +(object.deaths[i]+1) + "was the Hunter, and wants retribution!");
+			object.logs.push("Player " +(object.deaths[i]+1) + " was the Hunter, and wants retribution!");
 			actualRol_ = "HUNTER";
 			object.newRol = actualRol_;
 			object.deaths.splice(i,1);
@@ -187,9 +191,10 @@ function processDeaths(object)
 		else{
 			object.logs.push("Player "+ (object.deaths[i]+1) +" has died!");
 			//El jugador muere
-			players_[object.deaths[i] == "DEAD"];
+			players_[object.deaths[i]] = "DEAD";
 		}
 	}
+    checkWin(object);
 }
 
 function checkWin(object)//Comprueba si un bando ha ganado
@@ -229,6 +234,17 @@ function countMaxVotes()
 		}
 	}
 	return people;
+}
+
+function countVampires()
+{
+	vampires =0;
+	for(i=0; i<players_.length; i++){
+		if(players_[i] == "VAMPIRE"){
+			vampires++;
+		}
+	}
+	return vampires;
 }
 
 function resetVotes()
