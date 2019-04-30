@@ -12,8 +12,7 @@ players_[5] = "VAMPIRE";
 players_[6] = "FARMER";
 players_[7] = "FARMER";
 vampireAmount = 2;
-vampireVotes = [];
-farmVotes= [];
+votation = [];
 votes = [];
 
 function statusUpdate() {
@@ -25,7 +24,7 @@ function statusUpdate() {
 /*Para consultar
 playJSON = {
     rol: 'VAMPIRE',
-    client: clientPlayer,
+    client: client,
     victim: victim_,
 }
 */
@@ -56,9 +55,10 @@ function recivePlay(playJSON)//Tambien recibirá el estado de la partida
 
 function popularMove(play, object)
 {
-	farmVotes.push(play.victim);
-	if(farmVotes.length == countMaxVotes)
+	votation.push(play.victim);
+	if(votation.length == countMaxVotes)
 	{
+		resetVotes();
 		i =evenRepeatVotationCount();
 		if(i<0)
 		{
@@ -72,21 +72,22 @@ function popularMove(play, object)
 			object.id = 'POPULAR_VOTED';
 			startNight(object);//Termina la noche (provisional, esto lo acabará haciendo la bruja)
 		}
+		votation = [];
 	}
 	else {
 		object.id = 'CONTINUE_VOTATION';
-		object.logs.push("Player " + (play.clientPlayer +1) +" voted Player " + (play.victim+1)+"!");
+		object.logs.push("Player " + (play.client+1) +" voted Player " + (play.victim+1)+"!");
 	}
 }
 
 function hunterMove(play, object)
 {
-	object.deaths.push(play.victim_);
+	object.deaths.push(play.victim);
 	object.id  = 'HUNTER_SHOT';
-	object.logs.push("Player "+ (play.clientPlayer+1) +" has shot Player "+ (play.victim+1) +"!")
-	object.logs.push("Player "+ (play.clientPlayer+1) +" has died!");
+	object.logs.push("Player "+ (play.client+1) +" has shot Player "+ (play.victim+1) +"!")
+	players_[play.client] = "DEAD";
 	//El cazador muere
-	players_[object.clientPlayer] == "DEAD";
+	object.deaths.push(play.client);
 	processDeaths(object);
 	if(lastRol_ == "POPULAR_VOTATION"){//Si le ha matado el pueblo, empieza la noche
 		startNight(object);
@@ -101,9 +102,10 @@ function hunterMove(play, object)
 
 function vampireMove(play, object)
 {
-	vampireVotes.push(play.victim);
-	if(vampireVotes.length == vampireAmount)
+	votation.push(play.victim);
+	if(votation.length == vampireAmount)
 	{
+		resetVotes();
 		i =evenRepeatVotationCount();
 		if(i<0)
 		{
@@ -117,6 +119,7 @@ function vampireMove(play, object)
 			object.id = 'VAMPIRES_VOTED';
 			endNight(object);//Termina la noche (provisional, esto lo acabará haciendo la bruja)
 		}
+		votation = [];
 	}
 	else {object.id = 'CONTINUE_VOTATION'}
 }
@@ -126,10 +129,9 @@ function evenRepeatVotationCount()
 	greatest =-1;
     greatestVotes =-1;
     greatestEven = -1;
-    resetVotes();
-    for(i =0; i<vampireVotes.length; i++)
+    for(i =0; i<votation.length; i++)
     {
-    	votes[vampireVotes[i]]+=1;
+    	votes[votation[i]]+=1;
     }
     for(i =0; i<votes.length; i++)
     {
@@ -226,6 +228,7 @@ function countMaxVotes()
 			people++;
 		}
 	}
+	return people;
 }
 
 function resetVotes()

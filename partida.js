@@ -121,7 +121,7 @@ actualRol= "VAMPIRE";
             {
                 for (var i = 0; i < players.length; i++) {
                     if(players[i][0] == rol){
-                        players[i][1] == 0;
+                        players[i][1] = 0;
                     }
                 }
             }
@@ -129,7 +129,7 @@ actualRol= "VAMPIRE";
             function resetPlay()
             {
                 for (var i = 0; i < players.length; i++) {
-                    players[i][1] == 0;
+                    players[i][1] = 0;
                 }
             }
 
