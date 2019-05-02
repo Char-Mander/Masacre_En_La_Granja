@@ -28,8 +28,16 @@
 			const lineInput = document.getElementById("texto");
 			document.getElementById("escrito").onsubmit = (e) => {
 				var text = lineInput.value;
-				ws.send(text);
-				lineInput.value = ""
+				var params={
+					method:"POST",
+					mensaje: lineInput,
+					body:JSON.stringify({
+						id:1,
+						mensaje: lineInput
+					})
+				};
+				fetch("/user/chat/enviar", params);
+				lineInput.value = "";
 				return false;
 			}
 		

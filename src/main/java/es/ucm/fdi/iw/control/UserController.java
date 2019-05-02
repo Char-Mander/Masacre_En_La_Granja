@@ -271,7 +271,25 @@ public class UserController {
 		Boolean empezada = g.started();
 		model.addAttribute("empezada", empezada);
 		model.addAttribute("game", g);
-		return "partidaEmpezada";
+		return "pruebas/partidaEmpezada";
 	}
+
+		/*
+	DEJARLO DE MOMENTO
+	ELIMINAR ANTES DE LA ENTREGA
+	*/
+	@GetMapping("/pruebaChat")
+	public String pruebaChat(Model model, HttpSession session){
+
+		return "pruebas/pruebaChat";
+	}
+	
+	@PostMapping("chat/enviar")
+    public void enviar(Model model, HttpServletRequest request, Principal principal, @RequestParam String mensaje){
+        //ws.send(text); 
+		System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+		System.out.println(mensaje);
+
+    }
 	
 }
