@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" th:href="@{/css/faq.css}">
+	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
 	<title>FAQ | Masacre en la granja</title>
 </head>
 
@@ -11,6 +12,9 @@
 	<nav th:replace="fragments/nav.html :: nav">
 		Nav goes here
 	</nav>
+	<div th:replace="fragments/footer.html :: bootstrap">
+		Nav goes here
+	</div>
 
 <header>
 	<h1>FAQ - Preguntas frecuentes</h1>

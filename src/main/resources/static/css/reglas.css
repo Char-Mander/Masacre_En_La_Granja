@@ -1,43 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Felipa');
 
-*{
-	padding: 0;
-	margin: 0;
-	font-size: 20px;
-}
 body{
 	background-color: #5c1414;
-	font-family: 'Felipa', cursive;
 }
 
-nav {
-    display: flex;
-    background-image: linear-gradient(to bottom right, rgb(31, 30, 30) , rgb(63, 63, 63));
-    color: rgb(184, 183, 183);
-
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-
-    align-items: center;
-    justify-content: space-evenly;
-    min-height: 60px;
-}
-
-
-span.a{
-	border: none;
-	color: white;
-}
-
-span.a:visited{
-	color: white;
-	text-decoration: none;
-}
-
-span.a:hover{
-	color: #918d8d;
-	text-decoration: none;
-}
 
 .logx{
 	display: flex;
@@ -135,21 +100,6 @@ div.personajes h3{
 div.personajes h4{
 	margin-left: 5%;
 	margin-top:1%;
-}
-
-a:-webkit-any-link {
-
-	cursor: pointer;
-	text-decoration: none;
-	color: white;
-}
-
-a:-webkit-any-link:hover {
-	color: darkgrey;
-}
-
-a:-webkit-any-link:active {
-	color: darkred;
 }
 
 

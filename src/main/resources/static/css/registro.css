@@ -1,16 +1,7 @@
-@import url('https://fonts.googleapis.com/css?family=Felipa');
 
-* {
-    padding: 0;
-    margin: 0;
-	font-size: 20px;
-    
-}
 
 body {
     background-color: #5c1414;
-    /*background-color: #252525; */
-    font-family: 'Felipa', cursive;
 }
 
 .titulo{
@@ -20,6 +11,8 @@ body {
     color: rgb(165, 165, 165);
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
     justify-content: center;
+    max-height: 225px;
+    overflow: hidden;
 }
 
 .cuerpo {
@@ -34,11 +27,68 @@ body {
     color: #161616;
 }
 
+div.cuerpo h2{
+    align-content: center;
+    align-self: center;
+    margin-bottom: 2%;
+}
+
 form{
 	display: flex;
     flex-direction: column;
     margin-left: 5%;
     margin-right: 5%;
+}
+
+div.dato {
+    margin-top: 2%;
+}
+
+div.dato.photo{
+width: 100%;
+    height: auto;
+}
+
+input{
+   width: 60%;
+    max-height: 28px;
+}
+
+input:invalid {
+    border: 2px solid red;
+}
+
+div.dato.photo input{
+    width: 70%;
+    font-size: 17px;
+}
+
+button{
+    display: flex;
+    text-align: center;
+    align-self: center;
+    justify-content: center;
+    width: 100%;
+    margin: auto;
+    height: 25%;
+    max-height: 50px;
+    min-height: 40px;
+    border: 1px solid #000000;
+    border-color: #555b61;
+    color: rgb(196, 196, 196);
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    background-color: rgb(63, 63, 63);
+    border-radius: 5px;
+    margin-top: 2%;
+}
+
+
+button:hover {
+    background-color: rgb(49, 49, 49);
+}
+
+button:active {
+    background-color: #272727;
 }
 
 .dato{

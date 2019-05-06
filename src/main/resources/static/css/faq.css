@@ -1,30 +1,9 @@
-@import url('https://fonts.googleapis.com/css?family=Felipa');
 
-*{
-  margin: 0;
-  padding: 0;
-    font-size: 20px;
-}
 body {
   font-size: 100%;
-  font-family: 'Felipa', cursive;
   background-color: #5c1414;
   color: red;
 }
-
-nav {
-    display: flex;
-    background-image: linear-gradient(to bottom right, rgb(31, 30, 30) , rgb(63, 63, 63));
-    color: rgb(184, 183, 183);
-
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-
-    align-items: center;
-    justify-content: space-evenly;
-    min-height: 60px;
-}
-
 
 .logx{
     display: flex;
@@ -71,20 +50,6 @@ img{
     height: 5vw;
 }
 
-a:-webkit-any-link {
-
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
-}
-
-a:-webkit-any-link:hover {
-    color: darkgrey;
-}
-
-a:-webkit-any-link:active {
-    color: darkred;
-}
 
 header {
   position: relative;
@@ -102,16 +67,19 @@ header h1 {
 }
 
 .faq {
-  width: 90%;
-  max-width: 1024px;
-  position: relative;
-  margin: 4em auto;
-  box-shadow: none;
+    width: 90%;
+    max-width: 100%;
+    position: relative;
+    box-shadow: none;
 }
 
 .faq ul{
   list-style: none;
   margin: 2%;
+}
+
+.faq li{
+    margin: 1%;
 }
 
 .categorias-faq a {

@@ -3,20 +3,27 @@
 <head>
     <meta charset="utf-8">
     <title>Crear grupo | Masacre en la granja</title>
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/lobby.css}">
 </head>
 <body>
 <nav th:replace="fragments/nav.html :: nav">
     Nav goes here
 </nav>
+<div th:replace="fragments/footer.html :: bootstrap">
+    Nav goes here
+</div>
 <main>
+    <div class="gameID">
+        <span>Id de partida: </span><span th:text="${game.id}">game id</span>
+    </div>
     <div class="miembros">
         <div class= "nombre" th:each="jugador : ${jugadores}">
-            <td th:text="${jugador.name}">Nombre de Jugador</td>
+            <span th:text="${jugador.name}">Nombre de Jugador</span>
         </div>
     </div>
     <div class="acciones">
-        <form th:action="@{/user/leaveLobby}" method="POST" enctype="multipart/form-data">
+        <form th:action="@{/lobby/{idGame}/leave(idGame=${game.id})}" method="POST" enctype="multipart/form-data">
             <button type="submit" class="boton">Abandonar</button>
         </form>
         <form th:action="@{/game}" method="POST" enctype="multipart/form-data">

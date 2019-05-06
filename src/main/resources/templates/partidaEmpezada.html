@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Partida | Masacre en la granja </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/partida.css}">
+</head>
+<body>
+    <h1 th:if="${empezada}">La partida ha empezado</h1>
+    <h1 th:unless="${empezada}">Sigue esperando con paciencia</h1>
+    <p th:text="${game.status}"></p>
+</body>
+
+</html>

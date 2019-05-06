@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Masacre en la granja</title>
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/buscarPartida.css}">
+</head>
+<body>
+    <nav th:replace="fragments/nav.html :: nav">
+    Nav goes here
+    </nav>
+
+    <main class="wrapper">
+        <div class= "titulo">MASACRE EN LA GRANJA</div>
+        <div class="contenedor">
+            <a th:href="@{/lobby/newgame}" class="boton">Nueva Partida</a>
+            <a th:href="@{/lobby/random}" class="boton">Partida Aleatoria</a>
+            <a th:href="@{/lobby/select}" class="boton">Elegir Partida</a>
+        </div>
+    </main>
+</body>
+</html>

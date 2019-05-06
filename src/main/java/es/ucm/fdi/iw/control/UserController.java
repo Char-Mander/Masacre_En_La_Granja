@@ -1,6 +1,7 @@
 package es.ucm.fdi.iw.control;
 
 import es.ucm.fdi.iw.LocalData;
+import es.ucm.fdi.iw.model.Game;
 import es.ucm.fdi.iw.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +51,16 @@ public class UserController {
 		return "user";
 	}
 
+	//Función para comprobar que el nombre del user que se va a registrar no existe
+	@PostMapping("/loginOk/{name}")
+	public Boolean existingName(@PathVariable String name){
+		//Mirar en la base de datos mágicamente para ver si está creado
+		Long usersWithLogin = entityManager.createNamedQuery("User.HasName", Long.class)
+				.setParameter("userName", name).getSingleResult();
+		//si creado
+		return usersWithLogin == 0;
+	}
+
 	@PostMapping("/{id}")
 	@Transactional
 	public String postUser(@PathVariable long id, 
@@ -68,7 +79,7 @@ public class UserController {
 		// ojo: faltaria más validación
 		if (edited.getPassword() != null && edited.getPassword().equals(pass2)) {
 			target.setPassword(edited.getPassword());
-		}		
+		}
 		target.setName(edited.getName());
 		return "user";
 	}	
@@ -120,7 +131,6 @@ public class UserController {
 		}
 		return "redirect:/user/" + id;
 	}
-	
 	
 	@GetMapping("/register")
 	public String getRegister(Model model) {
@@ -181,29 +191,52 @@ public class UserController {
 
 		return "redirect:/user/" + u.getId();
 	}
+
+	@GetMapping("/login")
+	public String getLogin(Model model) { return "iniciosesion"; }
+
+	@PostMapping("/login")
+	@Transactional
+	public String login(Model model, HttpServletRequest request, Principal principal, @RequestParam String userName,
+						   @RequestParam CharSequence userPassword, HttpSession session) {
+
+		Long usersWithLogin = entityManager.createNamedQuery("User.HasName", Long.class)
+				.setParameter("userName", userName).getSingleResult();
+
+		// if the user exists, we check the if the password is correct
+		if (usersWithLogin != 0) {
+			//	Se saca la constraseña del usuario que se está loggeando
+			String pass = entityManager.createNamedQuery("User.Password", String.class)
+					.setParameter("userName", userName).getSingleResult();
+			
+			//	Se compara la contraseña introducida con la contraseña cifrada de la BD
+			boolean correct = passwordEncoder.matches(userPassword, pass);
+			log.info("The passwords match: {}", correct);
+			if(correct) {
+				User u = entityManager.createNamedQuery("User.ByName", User.class)
+						.setParameter("userName", userName).getSingleResult();
+				
+				session.setAttribute("user", u);
+				return "redirect:/user/" + u.getId();	//Devuelve el usuario loggeado
+			}else {
+				return "redirect:/user/login"; 
+			}
+		}
+
+		return "redirect:/user/register";
+	}
 	
 	@GetMapping("/logout")
 	public String logout(Model model, HttpSession session) {
 		session.setAttribute("user", null);
 		return "redirect:/user/login";
 	}
-
-	@GetMapping("/{id}/lobby")
-	public String getLobby(@PathVariable String id, Model model, HttpSession session) {
-		
-		User[] usuarios = {new User("Usuario 1"), new User("Usuario 2"), new User("Usuario 3"), new User("Usuario 4"), new User("Usuario 5")};
-		model.addAttribute("jugadores", usuarios);
-		
-		return "lobby";
+	
+	@GetMapping("/searchGame")
+	public String searchGame() {
+		return "buscarPartida";
 	}
 	
-	@PostMapping("/{id}/joinLobby")
-	public String joinLobby(@PathVariable String id, Model model, HttpSession session) {
-		
-		Long idLong = Long.parseLong(id);
-		
-		return "reglas";
-	}
 
 	/**
 	 * Non-interactive authentication; user and password must already exist
@@ -223,6 +256,21 @@ public class UserController {
 	        SecurityContextHolder.getContext().setAuthentication(null);
 	        log.error("Failure in autoLogin", e);
 	    }
-}
+	}
 
+	/*
+	ELIMINAR ANTES DE LA ENTREGA
+	*/
+	@GetMapping("/gameStarted")
+	public String probarGameStarted(Model model, HttpSession session) {
+		String json = "{\"momento\": \"inLobby\",\"esDeDia\": 1,\"users\":[4,35,18,26,97,35],\"userIdRol\":{\"4\": \"vampiro\",\"35\": \"granjero\",\"18\": \"vampiro\",\"26\": \"bruja\",\"97\": \"granjero\",\"35\": \"granjero\"},\"userIdAlive\":{\"4\": 1,\"35\": 0,\"18\": 0,\"26\": 0,\"97\": 1,\"35\": 0},\"enamorados\":[18,35],\"acciones\": [{\"rol\": \"vampiro\",\"client\": 18,\"victim\": 97,\"action\": \"\"}]}";
+		Game g = new Game();
+		g.setStatus(json);
+		log.debug(g.getStatus());
+		Boolean empezada = g.started();
+		model.addAttribute("empezada", empezada);
+		model.addAttribute("game", g);
+		return "partidaEmpezada";
+	}
+	
 }

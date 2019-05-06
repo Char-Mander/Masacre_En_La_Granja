@@ -3,13 +3,18 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Estadísticas Globales | Masacre en la granja</title>
+		<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
 		<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/estadisticas.css}">
 	</head>
-
+	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/estadisticas.css}">
 	<body>
 		<nav th:replace="fragments/nav.html :: nav">
 			Nav goes here
 		</nav>
+		<div th:replace="fragments/footer.html :: bootstrap">
+			Nav goes here
+		</div>
+
 		<main>
 			<table name="stats">
 				<thead>

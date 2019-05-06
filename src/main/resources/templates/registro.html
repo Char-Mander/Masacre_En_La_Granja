@@ -3,10 +3,38 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Registro | Masacre en la granja</title>
+	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
 	<link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/registro.css}">
+	<script>
+		window.onload = () => {
+			var login = document.getElementById("login");
+			login.setCustomValidity("no se si esta libre");
+
+			login.onchange = () => {
+				const v = login.value;
+				fetch("/user/loginOk/"+v).then((response) => {
+					login.setCustomValidity(response.ok ? "" : "¡Este usuario ya existe!");
+				});
+
+			};
+
+			var pass = document.getElementById("pass");
+			pass.onchange = () => {
+				if (pass.value.length >= 8) {
+					pass.setCustomValidity("");
+				} else {
+					pass.setCustomValidity("¡Contraseña demasiado fácil!");
+				}
+
+			};
+		};
+	</script>
 </head>
 
 <body>
+	<div th:replace="fragments/footer.html :: bootstrap">
+		Nav goes here
+	</div>
 	<div class= "titulo">MASACRE EN LA GRANJA</div>
 	<div class="cuerpo">
 		<h2>Registro de usuario</h2>
@@ -14,16 +42,15 @@
 		<div class="contenedor_datos">
 			<form th:action="@{/user/register}" method="POST" enctype="multipart/form-data">
 				<div class="dato name">
-					Nombre de usuario: <input name="userName" placeholder="Nombre de usuario" />
+					Nombre de usuario: <input id="login" required name="userName" placeholder="Nombre de usuario" />
 				</div>
 				<div class="dato pass">
-					Contraseña: <input type="password" required name="userPassword" placeholder="Contraseña"/>
+					Contraseña: <input id="pass" type="password" required name="userPassword" placeholder="Contraseña"/>
 				</div>
 				<div class="dato pass2">
 					Repite la contraseña: <input type="password" required name="userPassword2" placeholder="Confirmación"/>
 				</div>
-				<div class="dato photo">
-					Foto de perfil: <input type="file" name="userPhoto"/>
+				<div class="dato photo"> Foto de perfil: <input type="file" name="userPhoto"/>
 				</div>
 				
 				<button type="submit">Registrarse</button>

@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión | Masacre en la granja</title>
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/registro.css}">
 </head>
 <body>
+<div th:replace="fragments/footer.html :: bootstrap">
+    Nav goes here
+</div>
+
     <div class= "titulo">MASACRE EN LA GRANJA</div>
     <div class="cuerpo">
+    <div th:replace="fragments/debug.html :: debug">
+    		debug goes here
+		  </div>
         <h2>Inicio de sesión</h2>
 
         <div class="contenedor_datos">
             <form th:action="@{/login}" method="POST">
                 <div class="dato name">
-                    Nombre de usuario: <input name="username" placeholder="Nombre de usuario" />
+                    Nombre de usuario: <input required name="username" placeholder="Nombre de usuario" />
                 </div>
                 <div class="dato pass">
                     Contraseña: <input type="password" required name="password" placeholder="Contraseña"/>

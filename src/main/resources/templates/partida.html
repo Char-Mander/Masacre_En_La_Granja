@@ -7,9 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title> Partida | Masacre en la granja </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/nav.css}">
     <link rel="stylesheet" type="text/css" media="screen" th:href="@{/css/partida.css}">
 </head>
 <body>
+    <div th:replace="fragments/footer.html :: bootstrap">
+        Nav goes here
+    </div>
     <div class="contenedorPrincipal">
         <div class="notas">
             <ul th:each="u: ${userStats}" class="cartasYjugadores" >

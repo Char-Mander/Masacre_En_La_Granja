@@ -1,29 +1,42 @@
-@import url('https://fonts.googleapis.com/css?family=Felipa');
-
+@import url('https://fonts.googleapis.com/css?family=Asul');
 * {
-	padding: 0;
-	margin: 0;
-	font-size: 20px;
+    padding: 0;
+    margin: 0;
+    font-size: 20px;
+    font-family: 'Asul', sans-serif;
 }
 
 nav {
     display: flex;
     background-image: linear-gradient(to bottom right, rgb(31, 30, 30) , rgb(63, 63, 63));
     color: rgb(184, 183, 183);
-
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-
     align-items: center;
     justify-content: space-evenly;
-    min-height: 60px;
+    height: auto;
+}
+
+.logx {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    max-height: 77px;
+}
+
+div.loggedUser {
+    display: flex;
+    flex-direction: row;
+    width: 15%;
+    min-width: 141px;
 }
 
 a:-webkit-any-link {
-
     cursor: pointer;
     text-decoration: none;
     color: white;
+    display: flex;
+    align-items: center;
 }
 
 a:-webkit-any-link:hover {
@@ -32,4 +45,36 @@ a:-webkit-any-link:hover {
 
 a:-webkit-any-link:active {
     color: darkred;
+}
+
+.img-fluid {
+    max-width: 74px;
+    min-width: 68px;
+    height: auto;
+    border-radius: 50%;
+    margin: 2%;
+}
+
+div.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    justify-items: flex-start;
+    align-items: center;
+    margin: 2%;
+}
+
+span.a{
+    border: none;
+    color: white;
+}
+
+span.a:visited{
+    color: white;
+    text-decoration: none;
+}
+
+span.a:hover{
+    color: #918d8d;
+    text-decoration: none;
 }
