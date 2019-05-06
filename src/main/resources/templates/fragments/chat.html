@@ -31,13 +31,11 @@
 				var params={
 					method:"POST",
 					mensaje: lineInput,
-					body:JSON.stringify({
-						id:1,
-						mensaje: lineInput
-					})
 				};
-				fetch("/user/chat/enviar", params);
-				lineInput.value = "";
+				fetch("/user/chat/enviar", params).then((response) => {
+					if (response.ok)  lineInput.value = "";
+				});
+				
 				return false;
 			}
 		
