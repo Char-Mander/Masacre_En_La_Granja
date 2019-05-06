@@ -22,7 +22,7 @@
 					method: 'POST', headers: headers
 				}
 				fetch("/user/loginOk/" + v, params).then((response) => {
-					login.setCustomValidity(response.status == 200 ? "" : "está ocupado");
+					login.setCustomValidity(response.status == 200 ? "" : "¡Este usuario ya existe!");
 				});
 
 			};
