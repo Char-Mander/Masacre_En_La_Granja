@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html 
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
 	<title>Masacre en la granja | Chat</title>
-	<th:block th:replace="fragments/head :: header"/>
 
 </head>
+
 <body>
 	<nav th:replace="fragments/nav.html :: nav">
 		Nav goes here
@@ -19,33 +18,38 @@
 		<textarea id="recibido" cols="80" rows="10">
 		</textarea>
 		<form id="escrito">
-			<input id="texto" size="80" placeholder="escribe algo y pulsa enter para enviarlo"/>
+			<input id="texto" size="80" placeholder="escribe algo y pulsa enter para enviarlo" />
 		</form>
-	
+
 		<script>
-		window.addEventListener('load', () => {
-			// envio	
-			const lineInput = document.getElementById("texto");
-			document.getElementById("escrito").onsubmit = (e) => {
-				var text = lineInput.value;
-				var params={
-					method:"POST",
-					mensaje: lineInput,
-				};
-				fetch("/user/chat/enviar", params).then((response) => {
-					if (response.ok)  lineInput.value = "";
-				});
-				
-				return false;
-			}
-		
-			// recepcion
-			const lineOutput = document.getElementById("recibido");
-			ws.receive = (text) => {
-				lineOutput.value = lineOutput.value + '\n' + text;
-			}
-		});
+			window.addEventListener('load', () => {
+				// envio	
+				const lineInput = document.getElementById("texto");
+				document.getElementById("escrito").onsubmit = (e) => {
+					var text = lineInput.value;
+					const headers = {
+						"Content-Type": "application/json",				
+						"X-CSRF-TOKEN": config.csrf.value
+					};
+					const params = {
+						method: 'POST', headers: headers, body: JSON.stringify(text)
+					}
+					console.log
+					fetch("chat/enviar",params).then((response) => {
+						if (response.ok) lineInput.value = "";
+					});
+
+					return false;
+				}
+
+				// recepcion
+				const lineOutput = document.getElementById("recibido");
+				ws.receive = (text) => {
+					lineOutput.value = lineOutput.value + '\n' + text;
+				}
+			});
 		</script>
 	</th:block>
 </body>
+
 </html>

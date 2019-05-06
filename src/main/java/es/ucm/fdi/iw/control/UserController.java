@@ -6,6 +6,8 @@ import es.ucm.fdi.iw.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-import javax.xml.ws.Response;
 import java.io.*;
 import java.security.Principal;
 
@@ -54,12 +55,13 @@ public class UserController {
 
 	//Función para comprobar que el nombre del user que se va a registrar no existe
 	@PostMapping("/loginOk/{name}")
-	public Boolean existingName(@PathVariable String name){
+	public ResponseEntity existingName(@PathVariable String name){
 		//Mirar en la base de datos mágicamente para ver si está creado
 		Long usersWithLogin = entityManager.createNamedQuery("User.HasName", Long.class)
 				.setParameter("userName", name).getSingleResult();
 		//si creado
-		return usersWithLogin == 0;
+		if(usersWithLogin == 0) return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
 	}
 
 	@PostMapping("/{id}")
@@ -287,8 +289,7 @@ public class UserController {
 	@PostMapping("chat/enviar")
     public void enviar(Model model, HttpServletRequest request, Principal principal, @RequestParam String mensaje){
         //ws.send(text); 
-		System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-		System.out.println(mensaje);
+		log.debug("Mensaje enviado [{}]",mensaje);
 
     }
 	
