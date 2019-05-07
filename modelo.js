@@ -1,7 +1,5 @@
 //Informacion de la partida
-actualRol_= "VAMPIRE";
 dia=0;//0 noche , 1 dia
-numPlayers__= 8;
 players_= [];
 players_[0] = "VAMPIRE";
 players_[1] = "HUNTER";
@@ -158,8 +156,7 @@ function endNight(object)
     processDeaths(object);
     if(object.newRol != "HUNTER"){
         dia = 1;
-        actualRol_ = "POPULAR_VOTATION";
-        object.newRol = actualRol_;
+        object.newRol = "POPULAR_VOTATION";
         object.logs.push("The farmers wake up");
     }
 	
@@ -173,8 +170,7 @@ function startNight(object)
     if(object.newRol != "HUNTER"){
         dia = 0;
         object.logs.push("The farmers go to bed...");
-        actualRol_ = "VAMPIRE";//Provisional, será el estrcito primer rol
-        object.newRol = actualRol_;
+        object.newRol = "VAMPIRE";//Provisional, será el estrcito primer rol
     }
 }
 
@@ -184,8 +180,7 @@ function processDeaths(object)
 		//Se recorren los jugadores que han muerto esa noche
 		if(players_[object.deaths[i]] == "HUNTER" ){//Si el cazador muere, será su turno
 			object.logs.push("Player " +(object.deaths[i]+1) + " was the Hunter, and wants retribution!");
-			actualRol_ = "HUNTER";
-			object.newRol = actualRol_;
+			object.newRol = "HUNTER";
 			object.deaths.splice(i,1);
 		}
 		else{
@@ -249,7 +244,7 @@ function countVampires()
 
 function resetVotes()
 {
-    for(i =0; i < numPlayers__; i++)
+    for(i =0; i < players.length; i++)
     {
         votes[i]=0;
     }
