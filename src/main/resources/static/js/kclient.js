@@ -1,21 +1,45 @@
+const handleNewPlayer = (name) => {
+	addNewPlayerToLobby(name);
+}
+
+/**
+ * Añade un nuevo jugador al lobby del juego que va a empezar
+ * 
+ * @param name Nombre del jugador a añadir
+ * @returns
+ */
 function addNewPlayerToLobby(name) {
 	const miembros = document.getElementsByClassName("miembros");
 	miembros[0].innerHTML = miembros[0].innerHTML + "<td>" + name + "</td>";
 }
 
-function receiveChatMessage(message) {
-	const lineOutput = document.getElementById("recibido");
-	lineOutput.value = lineOutput.value + '\n' + message.propietario + ": " + message.mensaje;
-}
-
-const handleNewPlayer = (name) => {
-	addNewPlayerToLobby(name);
-}
 
 const handleChatMessage = (chatMessage) => {
 	receiveChatMessage(chatMessage);
 }
 
+/**
+ * Muestra el mensaje recibido por la pantalla del chat
+ * 
+ * @param message Mensaje que se muestra por pantalla
+ * @returns
+ */
+function receiveChatMessage(message) {
+	const lineOutput = document.getElementById("recibido");
+	lineOutput.value = lineOutput.value + '\n' + message.propietario + ": " + message.mensaje;
+}
+
+/**
+ * Distingue entre un mensaje del chat y la adición de un nuevo
+ * jugador al lobby de la partida.
+ * 
+ * Formato del JSON de mensaje de chat:
+ * 	{ "chatMessage": {"propietario": "nombre", "mensaje": "hola"} }
+ * 
+ * Formato del JSON de nuevo jugador:
+ * 	{ "newPlayer": "nombre" }
+ * 
+ */
 const handleMessage = (o) => {
 	console.log(o);
 	if (o.newPlayer) handleNewPlayer(o.newPlayer);
@@ -26,15 +50,7 @@ window.addEventListener('load', () => {
 	if (config.socketUrl !== false) {
 		ws.initialize(config.socketUrl);
 	}
-	ws.receive = (text) => {
-		console.log("just in:", text);
-		try {
-			const o = JSON.parse(text);
-			handleMessage(o);
-		} catch (e) {
-			console.log("...not json: ", e);
-		}
-	}
+	
 	window.setInterval(() => { }, 5000);
 });
 
@@ -49,24 +65,17 @@ const ws = {
 	socket: null,
 
 	/**
-	 * Sends a string to the server via the websocket.
-	 * @param {string} text to send 
-	 * @returns nothing
-	 */
-	send: (text) => {
-		if (ws.socket != null) {
-			ws.socket.send(text);
-		}
-	},
-
-	/**
 	 * Default action when text is received. 
 	 * @returns
 	 */
 	receive: (text) => {
-		console.log(text);
-		obj = JSON.parse(text);
-		handleMessage(obj);
+		console.log("just in:", text);
+	try {
+		const o = JSON.parse(text);
+		handleMessage(o);
+	} catch (e) {
+		console.log("...not json: ", e);
+	}
 	},
 
 	/**
@@ -84,13 +93,3 @@ const ws = {
 		}
 	}
 }
-
-/**
- * Actions to perform once the page is fully loaded
- */
-window.addEventListener('load', () => {
-	if (config.socketUrl !== false) {
-		ws.initialize(config.socketUrl);
-	}
-
-});
