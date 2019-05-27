@@ -197,7 +197,6 @@ function startNight(object) {
 		object.dia = 0;
 		object.logs.push("The farmers go to bed...");
 		object.newRol = rolOrder[0];
-		object.currentDeaths = [];
 	}
 }
 
