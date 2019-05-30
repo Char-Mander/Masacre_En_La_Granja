@@ -52,14 +52,14 @@ const handleMostrarBruja = (obj) => {
 		document.getElementById("controlB").addEventListener("click", function () {
 			option = 2;
 			document.getElementById("controlB").style.backgroundColor = '#1D1C1C';
+			vote(obj.gonnaDie)();
 		});
-		document.getElementById("controlB").addEventListener("mouseup", vote(obj.gonnaDie));
 	} else {
 		document.getElementById("controlB").style.backgroundColor = '#1D1C1C';
 	}
 
 	document.getElementById("controlC").addEventListener("click", function () {
-		option = 0; vote(-1);
+		option = 0; vote(-1)();
 	});
 }
 

@@ -99,7 +99,7 @@ public class ApiController {
 		// Si rol no coincide
 		if (!s.players.get(user.getName()).equals(a.rol) && !a.rol.equals("POPULAR_VOTE"))
 			return ResponseEntity.badRequest().build();
-		if (s.players.get(user.getName()).equals(s.players.get(a.victim)) && !a.rol.equals("POPULAR_VOTE"))
+		if (s.players.get(user.getName()).equals(s.players.get(a.victim)) && !a.rol.equals("POPULAR_VOTE") && !a.rol.equals("WITCH"))
 			return ResponseEntity.badRequest().build();
 		// Si la víctima no existe o esta muerta
 		boolean victimaValida = false;
@@ -116,9 +116,9 @@ public class ApiController {
 			return ResponseEntity.badRequest().build();
 		// Si es la bruja y puede hacer esa accion
 		if (a.rol.equals("WITCH") && s.availableWitchActions != 3) {
-			if (s.availableWitchActions == 2 && a.option != "2")
+			if (s.availableWitchActions == 2 && a.option.equals("1"))
 				return ResponseEntity.badRequest().build();
-			if (s.availableWitchActions == 1 && a.option != "1")
+			if (s.availableWitchActions == 1 && a.option.equals("2"))
 				return ResponseEntity.badRequest().build();
 		}
 
@@ -133,11 +133,12 @@ public class ApiController {
 			return ResponseEntity.badRequest().build();
 		String nuevoEstado = result[1];
 		log.info("NUEVO ESTADO --> " + nuevoEstado);
+		String turnoAnterior = s.turno;
 		g.setStatus(nuevoEstado);
 		entityManager.persist(g);
 		entityManager.flush();
 		Status nuevoEstadoObj = g.getStatusObjFromString(nuevoEstado);
-		if (nuevoEstadoObj.turno.equals("WITCH")) {
+		if (nuevoEstadoObj.turno.equals("WITCH") && nuevoEstadoObj.currentDeaths.size() == 1) {
 			// TRIPLE BARRA SI O SI
 			// Hay que hacer doble escapado de las comillas
 			// uno para el string y otro para el json
@@ -148,6 +149,13 @@ public class ApiController {
 					+ "<div id=\\\"controlC\\\" class=\\\"control\\\">Pass</div>" + "</div>";
 			String mensaje = "{" + "\"mostrarBruja\":{ \"divWitch\":\"" + divWitch + "\", \"availableWitchActions\":"
 					+ nuevoEstadoObj.availableWitchActions + ", \"gonnaDie\": \"" + nuevoEstadoObj.currentDeaths.get(0) + "\"}}";
+			for (User u : users) {
+				if (!g.getStatusObj().players.get(u.getName()).equals("WITCH"))
+					continue;
+				iwSocketHandler.sendText(u.getName(), mensaje);
+			}
+		}else if(!nuevoEstadoObj.turno.equals(turnoAnterior) && turnoAnterior.equals("WITCH")){
+			String mensaje = "{" + "\"ocultarBruja\": \"\"}";
 			for (User u : users) {
 				if (!g.getStatusObj().players.get(u.getName()).equals("WITCH"))
 					continue;
