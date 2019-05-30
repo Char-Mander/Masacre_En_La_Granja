@@ -86,7 +86,7 @@ function witchMove(play, object) {
 	}
 	else if (play.option == 2) { // La bruja protege
 		object.availableWitchActions = object.availableWitchActions == 3 ? 1 : 0;
-		object.currentDeaths = [];
+		object.currentDeaths = []; //ojo que si mata y luego revive... revive a los dos....
 		object.logs.push("The witch begged to her unholy god and protected " + play.victim + "'s soul ! Hail the Dark Lord!");
 	}
 	//Sin else para que si gasta sus opciones tambien haga end nigth

@@ -138,7 +138,7 @@ public class ApiController {
 		entityManager.persist(g);
 		entityManager.flush();
 		Status nuevoEstadoObj = g.getStatusObjFromString(nuevoEstado);
-		if (nuevoEstadoObj.turno.equals("WITCH") && nuevoEstadoObj.currentDeaths.size() == 1) {
+		if (nuevoEstadoObj.turno.equals("WITCH") && !nuevoEstadoObj.turno.equals(turnoAnterior)) {
 			// TRIPLE BARRA SI O SI
 			// Hay que hacer doble escapado de las comillas
 			// uno para el string y otro para el json
@@ -155,7 +155,7 @@ public class ApiController {
 				iwSocketHandler.sendText(u.getName(), mensaje);
 			}
 		}else if(!nuevoEstadoObj.turno.equals(turnoAnterior) && turnoAnterior.equals("WITCH")){
-			String mensaje = "{" + "\"ocultarBruja\": \"\"}";
+			String mensaje = "{" + "\"ocultarBruja\": \"a\"}";
 			for (User u : users) {
 				if (!g.getStatusObj().players.get(u.getName()).equals("WITCH"))
 					continue;
