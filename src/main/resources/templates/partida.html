@@ -37,7 +37,7 @@
         </div>
         <div class=center>
             <div class="playerNo" id="plaNo" th:text="${userName}">You are Player 1</div>
-            <div class="playerRol" th:id="${userName}+Rol" th:text="${userRol} +${iconoRol}">VAMPIRE </div>
+            <div class="playerRol" id="plaRol" th:text="${userRol} +${iconoRol}">VAMPIRE </div>
             <div>
                 <textarea rows="7" cols="50" class="textLog" id="log" readonly></textarea>
             </div>
@@ -52,8 +52,7 @@
             <ul class="cartas_y_jugadores">
                 <li class="player_card" th:each="player : ${players}">
                     <div class="player" th:id="${player}+Player" th:text="${player}">Player 1</div>
-                    <div class="card" th:id="${player}+Card"></div>
-                    <div class="deathInfo" th:id="${player}+Death">DEAD</div>
+                    <div class="card" th:id="${player}+Card">Card 1</div>
                 </li>
             </ul>
         </div>

@@ -12,7 +12,6 @@ public class Status {
     public String turno;
     public Integer dia; //0 = si; 1 = no
     public Map<String, String> players; // Map de nombre de jugador con su rol (que puede ser DEAD)
-    public Map<String, String> oldRols; //	Map de nombre de jugador con su rol anterior (no puede ser DEAD; para desvelar el rol cuando un jugador muere)
     //public List<Long> enamorados; //Contiene dos elementos que son el Id de los jugadores enamorados
     public List<Acciones> acciones; //Es un JSON y habria que pensar si crear otra clase para mapearlo
     public List<String> currentDeaths; //Esto es para modelo.js // lista de nombres de los que estan muriendo

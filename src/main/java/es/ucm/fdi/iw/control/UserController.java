@@ -251,7 +251,7 @@ public class UserController {
 		user = entityManager.find(User.class, user.getId());
 		Game activeGame = user.getActiveGame();
 		
-		if (activeGame != null && activeGame.started()) {
+		if (activeGame != null) {
 			return "redirect:/game/";
 		}
 		

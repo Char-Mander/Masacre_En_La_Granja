@@ -24,36 +24,11 @@ nav {
     max-height: 77px;
 }
 
-span.logx {
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    max-height: 77px;
-    align-items: center;
-}
-
 div.loggedUser {
     display: flex;
     flex-direction: row;
     width: 15%;
     min-width: 141px;
-    max-height: 70px;
-}
-
-a{
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-}
-
-a:hover{
-    color: darkgrey;
-}
-
-a:active{
-    color: darkred;
 }
 
 a:-webkit-any-link {
