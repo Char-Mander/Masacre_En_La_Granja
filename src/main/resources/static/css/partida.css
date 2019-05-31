@@ -294,7 +294,6 @@ div.chat{
     align-content: center;
     background-color: white;
     opacity: 0.5;
-    overflow: scroll;
     scroll-behavior: smooth;
     margin-right: 3vw;
     margin-left: 3vw;
