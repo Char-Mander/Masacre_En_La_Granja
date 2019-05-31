@@ -1,12 +1,13 @@
 var turno = "";
 var currentDeaths = [];
 var option = -1;
+var deaths = {};
 
 function cargarPartida() {
     console.log("Entrada en cargarPartida");
     var deads = document.getElementsByClassName("deathInfo");
     for (var i = 0; i < deads.length; i++)
-      deads[i].style.display = "none";
+        deads[i].style.display = "none";
 
     const headers = {
         "Content-Type": "application/json",
@@ -20,7 +21,7 @@ function cargarPartida() {
     fetch("/api/game/getStatus", params).then((response) => {
         if (response.status == 200) {
             response.text().then(function (text) {
-            	logEntry("Night falls, the farmers go to bed, vampires rise...");
+                logEntry("Night falls, the farmers go to bed, vampires rise...");
                 console.log("Status leído del getStatus: " + text);
                 var status = JSON.parse(text);
                 currentDeaths = status.currentDeaths;
@@ -110,11 +111,11 @@ function popularPlay(victim_) {
         headers: headers,
         body: text
     };
-    
-    noteEntry("Your vote is for " + victim_);
+
     fetch("/api/game/receivePlay", params).then((response) => {
         if (response.status == 200) {
             console.log("JUGADA ENVIADA");
+            noteEntry("Your vote is for " + victim_);
         }
         else {
             console.log("ALGO HA SALIDO MAL");
@@ -141,10 +142,10 @@ function vampirePlay(victim_) {
         headers: headers,
         body: text
     };
-    
-    noteEntry("Your victim is " + victim_);
+
     fetch("/api/game/receivePlay", params).then((response) => {
         if (response.status == 200) {
+            noteEntry("Your victim is " + victim_);
             console.log("JUGADA ENVIADA");
         }
         else {
@@ -157,7 +158,7 @@ function vampirePlay(victim_) {
 function hunterPlay(victim_) {
     console.log("Entrada en hunterPlay con victim_: " + victim_);
 
-   // players[clientPlayer][1] = 1;
+    // players[clientPlayer][1] = 1;
 
 
     //Envía jugada al servidor vía Ajax
@@ -182,14 +183,13 @@ function hunterPlay(victim_) {
         body: text
     };
 
-    noteEntry("You shot " + victim_);
     fetch("/api/game/receivePlay", params).then((response) => {
-        if (response.status == 200){
-        console.log("JUGADA ENVIADA");
-        played = 0;
+        if (response.status == 200) {
+            noteEntry("You shot " + victim_);
+            console.log("JUGADA ENVIADA");
         }
         else {
-        console.log("ALGO HA SALIDO MAL");
+            console.log("ALGO HA SALIDO MAL");
         }
     });
 }
@@ -201,12 +201,10 @@ function receiveStatus(newState)//Actualiza el estado del cliente via websocket
     printLogs(newState.logs);
     turno = newState.turno;
     currentDeaths = newState.currentDeaths;
-    if(turno == "VAMPIRES_WON" || turno == "FARMERS_WON" || turno == "TIE"){
-    	for(p in newState.players)
-    		newState.players[p] = "DEAD";
-    }
-    updateDeaths(newState.players, newState.oldRols);
-    
+    deaths = newState.deaths;
+
+    updateDeaths(deaths);
+
     switch (turno) {
     case "VAMPIRES_WON":    	
     	logEntry("The weak farmers have fallen...");
@@ -221,39 +219,36 @@ function receiveStatus(newState)//Actualiza el estado del cliente via websocket
     	noteEntry("PEACE! LOVE!");
         break;
     }
-    
+
 }
 
-function updateDeaths(deaths, oldRols) {
-	console.log("Entrada en updateDeaths");
-	console.log("Array de jugadores: " + deaths);
-	for(var p in deaths){
-		console.log("Jugador leído del players: " + p);
-		if(deaths[p] == "DEAD"){
-			document.getElementById(p + 'Death').style.display = 'flex';
-			document.getElementById(p + 'Death').style.alignSelf = 'center';
-			document.getElementById(p + 'Death').innerHTML = oldRols[p];
-			
-			var icono;
-			switch(oldRols[p]){
-			case "VAMPIRE":
-				icono = "\uD83E\uDDDB\u200D♂️";
-				break;
-			case "FARMER":
-				icono = "\uD83D\uDC68\u200D\uD83C\uDF3E ";
-				break;
-			case "WITCH":
-				icono = "\uD83E\uDDD9\u200D♀️";
-				break;
-			case "HUNTER":
-				icono = "\uD83C\uDFF9";
-				break;
-			}
-			
-			document.getElementById(p + 'Card').style.backgroundColor = 'transparent';
-			document.getElementById(p + 'Card').innerHTML = icono;
-		}
-	}
+function updateDeaths(deaths) {
+    console.log("Entrada en updateDeaths");
+    console.log("Array de jugadores: " + deaths);
+    for (var p in deaths) {
+        document.getElementById(p + 'Death').style.display = 'flex';
+        document.getElementById(p + 'Death').style.alignSelf = 'center';
+        document.getElementById(p + 'Death').innerHTML = deaths[p];
+
+        var icono;
+        switch (deaths[p]) {
+            case "VAMPIRE":
+                icono = "\uD83E\uDDDB\u200D♂️";
+                break;
+            case "FARMER":
+                icono = "\uD83D\uDC68\u200D\uD83C\uDF3E ";
+                break;
+            case "WITCH":
+                icono = "\uD83E\uDDD9\u200D♀️";
+                break;
+            case "HUNTER":
+                icono = "\uD83C\uDFF9";
+                break;
+        }
+
+        document.getElementById(p + 'Card').style.backgroundColor = 'transparent';
+        document.getElementById(p + 'Card').innerHTML = icono;
+    }
 }
 
 
@@ -268,7 +263,7 @@ function logEntry(message) {
 }
 
 function noteEntry(message) {
-	console.log("Entrada en noteEntry");
+    console.log("Entrada en noteEntry");
     document.getElementById('note').innerHTML = message;
 }
 

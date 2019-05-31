@@ -40,7 +40,6 @@ function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de l
 			hunterMove(play, object);
 			break;
 		case 'POPULAR_VOTE':
-			object.turno = oldState.turno;
 			popularMove(play, object);
 			break;
 		case 'WITCH':
@@ -64,7 +63,21 @@ function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de l
 		availableWitchActions: object.availableWitchActions
 	};
 
-	return Java.to([JSON.stringify(object), JSON.stringify(newStatus), JSON.stringify(cosasQuePasan)], "java.lang.String[]");
+	var deaths = {};
+	for (var i in object.players){
+		if(object.players[i] == "DEAD" || object.gameState == "FINISHED"){
+			deaths[i] = object.oldRols[i];
+		}
+	}
+
+	var obj = {
+		logs: object.logs,
+		turno: object.turno,
+		currentDeaths: object.currentDeaths,
+		deaths: deaths
+	}
+
+	return Java.to([JSON.stringify(obj), JSON.stringify(newStatus), JSON.stringify(cosasQuePasan)], "java.lang.String[]");
 }
 
 // option 0 -> no hace nada

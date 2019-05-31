@@ -22,8 +22,8 @@ const handleChatMessage = (chatMessage) => {
 	receiveChatMessage(chatMessage);
 }
 
-const handleNuevoEstado = (newState) => {
-	receiveStatus(newState); //esta funcion esta en partidaCliente.js
+const handleNuevoEstado = (obj) => {
+	receiveStatus(obj); //esta funcion esta en partidaCliente.js
 }
 
 const handleComenzarPartida = (idGame) => {
@@ -70,7 +70,8 @@ const handleMostrarFinPartida = (divHtml) => {
 
 const handleOcultarBruja = (o) => {
 	var elem = document.getElementById("controls");
-	elem.parentNode.removeChild(elem);
+	if(elem !== null)
+		elem.parentNode.removeChild(elem);
 }
 
 const handleMessage = (o) => {
