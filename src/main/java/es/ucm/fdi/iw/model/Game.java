@@ -174,7 +174,7 @@ public class Game {
 	}
     
     public boolean canBegin() {
-        return users.size() >= 8;
+        return users.size() >= 2;
     }
 
     public void init() {
@@ -225,10 +225,15 @@ public class Game {
             roles[count] = "VAMPIRO";
         }
 
-        roles[count] = "BRUJA";
-		++count;
-        roles[count] = "CAZAVAMPIROS";
-        ++count;
+        if (users.size() > 2) {
+			roles[count] = "BRUJA";
+			++count;
+		}
+        
+        if(users.size() > 3) {
+			roles[count] = "CAZAVAMPIROS";
+			++count;
+		}
 
         
         for(; count < users.size(); ++count) {
