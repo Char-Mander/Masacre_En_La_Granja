@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import es.ucm.fdi.iw.model.User;
+import sun.rmi.runtime.Log;
 
 /**
  * Called when a user is first authenticated (via login).
@@ -37,7 +38,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private EntityManager entityManager;
 
 	private static Logger log = LogManager.getLogger(LoginSuccessHandler.class);
-
+	
     @Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {

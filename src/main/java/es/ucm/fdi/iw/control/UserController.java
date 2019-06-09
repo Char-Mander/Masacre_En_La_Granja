@@ -200,7 +200,7 @@ public class UserController {
 
 		return "redirect:/user/" + u.getId();
 	}
-
+	
 	@GetMapping("/login")
 	public String getLogin(Model model, HttpSession session) {
 		if(session.getAttribute("user") != null) 

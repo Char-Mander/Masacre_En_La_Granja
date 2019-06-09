@@ -17,7 +17,8 @@ import javax.validation.constraints.NotEmpty;
 		@NamedQuery(name = "User.ByName", query = "SELECT u FROM User u WHERE u.name = :userName"),
 		@NamedQuery(name = "User.HasName", query = "SELECT COUNT(u) FROM User u WHERE u.name = :userName"),
 		@NamedQuery(name = "User.CorrectPassword", query = "SELECT u FROM User u WHERE u.name = :userName AND u.password = :userPassword"),
-		@NamedQuery(name = "User.Password", query = "SELECT password FROM User u WHERE u.name = :userName")
+		@NamedQuery(name = "User.Password", query = "SELECT password FROM User u WHERE u.name = :userName"),
+		@NamedQuery(name = "User.All", query = "SELECT name FROM User")
 })
 public class User {
 
