@@ -248,7 +248,7 @@ public class UserController {
 
 	@GetMapping("/searchGame")
 	@Transactional
-	public String searchGame(HttpSession session) {
+	public String searchGame(Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		user = entityManager.find(User.class, user.getId());
 		Game activeGame = user.getActiveGame();
@@ -256,6 +256,16 @@ public class UserController {
 		if (activeGame != null && activeGame.started()) {
 			return "redirect:/game/";
 		}
+		
+		List<Game> games = entityManager.createNamedQuery("Game.all",Game.class).getResultList();
+		
+		Long numFinished = entityManager.createNamedQuery("Game.numFinished", Long.class).getSingleResult();
+		Long numPlaying = entityManager.createNamedQuery("Game.numPlaying", Long.class).getSingleResult();
+		Long numInLobby = entityManager.createNamedQuery("Game.numInLobby", Long.class).getSingleResult();
+		
+		model.addAttribute("numFinished", numFinished);
+		model.addAttribute("numPlaying",numPlaying);
+		model.addAttribute("numInLobby", numInLobby);
 		
 		return "buscarPartida";
 	}

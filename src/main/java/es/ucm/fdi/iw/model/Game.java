@@ -19,10 +19,11 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @NamedQueries({ @NamedQuery(name = "Game.all", query = "SELECT x FROM Game x"),
-
-		@NamedQuery(name = "Game.getGame", query = "SELECT g FROM Game g WHERE g.id = :gameID"),
-
-				@NamedQuery(name = "Game.active", query = "SELECT g FROM Game g WHERE g.status NOT LIKE '%finished%'")
+				@NamedQuery(name = "Game.getGame", query = "SELECT g FROM Game g WHERE g.id = :gameID"),
+				@NamedQuery(name = "Game.active", query = "SELECT g FROM Game g WHERE g.status NOT LIKE '%FINISHED%'"),
+				@NamedQuery(name = "Game.numFinished", query = "SELECT COUNT (id) FROM Game g WHERE g.status LIKE '%FINISHED%'"),
+				@NamedQuery(name = "Game.numPlaying", query = "SELECT COUNT (id) FROM Game g WHERE g.status LIKE '%INGAME%'"),
+				@NamedQuery(name = "Game.numInLobby", query = "SELECT COUNT (id) FROM Game g WHERE g.status LIKE '%INLOBBY%'")
 			})
 public class Game {
 	
@@ -42,18 +43,24 @@ public class Game {
 	}
 	
 	public static String getIcon(String rol) {
-		String icon = "";
+		String icon;
 		
-		if (rol.equals("VAMPIRO")) {
-			icon = "\uD83E\uDDDB\u200D♂️";
-		} else if (rol.equals("GRANJERO")) {
-			icon = "\uD83D\uDC68\u200D\uD83C\uDF3E ";
-		} else if (rol.equals("BRUJA")) {
-			icon = "\uD83E\uDDD9\u200D♀️";
-		} else if (rol.equals("CAZAVAMPIROS")) {
-			icon = "\uD83C\uDFF9";
-		} else {
-			icon = "⚰";
+		switch (rol) {
+			case "VAMPIRO":
+				icon = "\uD83E\uDDDB\u200D♂️";
+				break;
+			case "GRANJERO":
+				icon = "\uD83D\uDC68\u200D\uD83C\uDF3E ";
+				break;
+			case "BRUJA":
+				icon = "\uD83E\uDDD9\u200D♀️";
+				break;
+			case "CAZAVAMPIROS":
+				icon = "\uD83C\uDFF9";
+				break;
+			default:
+				icon = "⚰";
+				break;
 		}
 		
 		return icon;
@@ -147,7 +154,7 @@ public class Game {
 	public void initLobby() {
         ObjectMapper mapper = new ObjectMapper();
         Status st = new Status();
-        st.gameState = "inLobby";
+        st.gameState = "INLOBBY";
     
         try {
             status = mapper.writeValueAsString(st);
@@ -161,7 +168,7 @@ public class Game {
 	 */
 	public boolean started() {
 		Status s = this.getStatusObj();
-		return !s.gameState.equals("inLobby");
+		return !s.gameState.equals("INLOBBY");
 	}
 
 	public Boolean finished(){
