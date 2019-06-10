@@ -42,24 +42,34 @@ public class ApiController {
 		user = entityManager.find(User.class, user.getId()); // <-- obtengo usuario de la BD
 
 		Game g = user.getActiveGame();
+		
+		List<User> users = new ArrayList<>(g.getUsers());
+		String message = "{" + "\"chatMessage\": {" + "\"propietario\":\"" + user.getName() + "\"," + "\"mensaje\":\""
+				+ mensaje + "\"}}";
+		for (User u : users) {
+			iwSocketHandler.sendText(u.getName(), message);
+		}
+		log.debug("Mensaje enviado [{}]", mensaje);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+	
+	@PostMapping("chat/enviarVampiros")
+	@Transactional
+	public ResponseEntity<?> enviarVampiros(HttpSession session, @RequestBody String mensaje) {
+		User user = (User) session.getAttribute("user"); // <-- este usuario no está conectado a la bd
+		user = entityManager.find(User.class, user.getId()); // <-- obtengo usuario de la BD
 
+		Game g = user.getActiveGame();
+		
 		List<User> users = new ArrayList<>(g.getUsers());
 		String message = "{" + "\"chatMessage\": {" + "\"propietario\":\"" + user.getName() + "\"," + "\"mensaje\":\""
 				+ mensaje + "\"}}";
 		Status s = g.getStatusObj();
 		String rolPropietario = s.players.get(user.getName());
 		for (User u : users) {
-			if (rolPropietario.equals("DEAD") && s.players.get(u.getName()).equals("DEAD")) {
-				iwSocketHandler.sendText(u.getName(), message);
-			} else if (s.dia == 1) {
-				if (!rolPropietario.equals("DEAD") && !s.players.get(u.getName()).equals("DEAD")) {
+			if (rolPropietario.equals("VAMPIRO") && s.players.get(u.getName()).equals("VAMPIRO")) {
 					iwSocketHandler.sendText(u.getName(), message);
 				}
-			} else if (s.dia == 0) {
-				if (rolPropietario.equals("VAMPIRO") && s.players.get(u.getName()).equals("VAMPIRO")) {
-					iwSocketHandler.sendText(u.getName(), message);
-				}
-			}
 		}
 		log.debug("Mensaje enviado [{}]", mensaje);
 		return ResponseEntity.status(HttpStatus.OK).build();

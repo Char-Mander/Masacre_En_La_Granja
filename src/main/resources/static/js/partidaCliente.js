@@ -28,6 +28,14 @@ function cargarPartida() {
                 currentDeaths = status.currentDeaths;
                 console.log(status.played);
                 turno = status.turno;
+                
+                if(status.players[clientPlayer] =="VAMPIRO"){
+                    for(var p in players){
+                        if(p != clientPlayer && status.players[p] == "VAMPIRO"){
+                            logEntry(p + " es un camarada chupasangre");
+                        }
+                    }
+                }
             });
         }
         else {

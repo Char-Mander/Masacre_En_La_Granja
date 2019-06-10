@@ -12,7 +12,10 @@
 		<textarea id="recibido" cols="80" rows="10" readonly="readonly">
 		</textarea>
 		<form id="escrito">
-			<input id="texto" size="80" placeholder="escribe algo y pulsa enter para enviarlo" />
+			<input class= "txt" id="texto" size="80" placeholder="escribe algo y pulsa enter para enviarlo" />
+		<div th:if="${userRol== 'VAMPIRO'}"class= "vampire">Mandar solo a vampiros
+		<input class ="check" id ="box" type="checkbox" name="soloVampiros" value="onlyVampires"></input>
+		</div>
 		</form>
 
 		<script>
@@ -20,6 +23,7 @@
 				// envio	
 				const lineInput = document.getElementById("texto");
 				document.getElementById("escrito").onsubmit = (e) => {
+                    var inputElements = document.getElementById('box');
 					var text = lineInput.value;
 					const headers = {
 						"Content-Type": "application/json",				
@@ -30,9 +34,25 @@
 						headers: headers,
 						body: text
 					}
-					fetch("/api/chat/enviar",params).then((response) => {
+                    if(inputElements != null){
+                    if(inputElements.checked){
+                        text = "<vampiro>"+text;
+                        params.body = text;
+                        fetch("/api/chat/enviarVampiros",params).then((response) => {
 						if (response.status == 200) lineInput.value = "";
 					});
+                    }else{
+                        fetch("/api/chat/enviar",params).then((response) => {
+						if (response.status == 200) lineInput.value = "";
+					});
+                    }
+                    }
+                    else{
+                    fetch("/api/chat/enviar",params).then((response) => {
+						if (response.status == 200) lineInput.value = "";
+					});
+                    }
+                    
 
 					return false;
 				}
