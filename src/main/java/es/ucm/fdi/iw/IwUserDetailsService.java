@@ -19,7 +19,7 @@ public class IwUserDetailsService implements UserDetailsService {
 	private static Logger log = LogManager.getLogger(IwUserDetailsService.class);
 
 	private EntityManager entityManager;
-
+	
 	@PersistenceContext
 	public void setEntityManager(EntityManager em){
 		this.entityManager = em;

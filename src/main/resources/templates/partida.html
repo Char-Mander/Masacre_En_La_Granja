@@ -17,7 +17,7 @@
 
 <body>
     <select hidden id="myvar">
-        <option hidden th:each="player : ${players}" th:value="${player}"></option>
+        <option hidden th:each="player : ${players}" th:value="${player.name}"></option>
     </select>
     <script>
         opts = document.getElementById("myvar");
@@ -42,9 +42,10 @@
         <div class="mesa">
             <ul class="cartas_y_jugadores">
                 <li class="player_card" th:each="player : ${players}">
-                    <div class="player" th:id="${player}+Player" th:text="${player}">Player 1</div>
-                    <div class="card" th:id="${player}+Card"></div>
-                    <div class="deathInfo" th:id="${player}+Death">DEAD</div>
+                    <img th:src="@{/user/{id}/photo(id=${player.id})}" class="img">
+                    <div class="player" th:id="${player.name}+Player" th:text="${player.name}">Player 1</div>
+                    <div class="card" th:id="${player.name}+Card"></div>
+                    <div class="deathInfo" th:id="${player.name}+Death">DEAD</div>
                 </li>
             </ul>
         </div>

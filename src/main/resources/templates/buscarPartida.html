@@ -13,6 +13,11 @@
 
     <main class="wrapper">
         <div class= "titulo">MASACRE EN LA GRANJA</div>
+        <div class= "estadisticas">
+            <div>Partidas terminadas: <span th:text="${numFinished}">Número</span></div>
+            <div>Partidas en curso: <span th:text="${numPlaying}">Número</span></div>
+            <div>Partidas en espera: <span th:text="${numInLobby}">Número</span></div>
+        </div>
         <div class="contenedor">
           <!--  <a th:href="@{/lobby/newgame}" class="boton">Nueva Partida</a> -->
             <a th:href="@{/lobby/random}" class="boton">Partida Aleatoria</a>

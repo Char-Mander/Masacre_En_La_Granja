@@ -91,6 +91,12 @@ li{
     height: 100%;
 }
 
+li .img{
+    width: 30%;
+    height: 30%;
+    align-self: center;
+}
+
 div.player{
     width: 100%;
     text-align: center;

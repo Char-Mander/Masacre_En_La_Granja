@@ -62,6 +62,10 @@ public class LobbyController {
         Game game = new Game();
         game.setCreationTime(Date.valueOf(LocalDate.now()));
         game.initLobby();
+        
+        entityManager.persist(game);
+        entityManager.flush();
+        
         addUserToGame(user, game);
         return "redirect:/lobby/" + game.getId();
     }

@@ -16,6 +16,21 @@ body{
   overflow: hidden;
 }
 
+.estadisticas{
+  display: flex;
+  flex-direction: column;
+  font-size: 30PX;
+  color: rgb(165, 165, 165);
+  justify-content: center;
+  align-content: center;
+  align-self: center;
+  width: 16%;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 200px;
+  margin-bottom: 5%;
+}
+
 .contenedor {
   display: flex;
   flex-direction: column;

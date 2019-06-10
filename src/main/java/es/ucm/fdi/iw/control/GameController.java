@@ -3,6 +3,7 @@ package es.ucm.fdi.iw.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpSession;
@@ -45,7 +46,19 @@ public class GameController {
         Game g = user.getActiveGame();
         if (g == null) return null;
         
-        model.addAttribute("players", g.getStatusObj().players.keySet());
+        Set<String> names = g.getStatusObj().players.keySet();
+        List<User> players = new ArrayList<>();
+        
+        for(String name : names) {
+            User u = entityManager.createNamedQuery("User.ByName", User.class).setParameter("userName", name)
+                                  .getSingleResult();
+            User u2 = new User();
+            u2.setName(name);
+            u2.setId(u.getId());
+            players.add(u2);
+        }
+        
+        model.addAttribute("players", players);
         model.addAttribute("userName", user.getName());
         model.addAttribute("userRol", g.getStatusObj().players.get(user.getName()));
         model.addAttribute("iconoRol", Game.getIcon(g.getStatusObj().players.get(user.getName())));

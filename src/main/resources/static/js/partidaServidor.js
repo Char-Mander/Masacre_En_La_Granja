@@ -108,7 +108,13 @@ function brujaMove(play, object) {
 	}
 	//Sin else para que si gasta sus opciones tambien haga end nigth
 	if (play.option == 0 || object.availableBrujaActions == 0) { // La bruja no hace nada
-		endNight(object);
+	    if(object.players[object.currentDeaths[0]] == "CAZAVAMPIROS"){
+            object.turno = "CAZAVAMPIROS";
+            playedNextTurn(object);
+        }
+	    else {
+            endNight(object);
+        }
 	}
 
 }

@@ -177,8 +177,11 @@ public class UserController {
 		entityManager.flush();
 		log.info("Creating & logging in student {}, with ID {} and password {}", userName, u.getId(), userPass);
 		
+		doAutoLogin(userName, userPassword, request);
+		
 		log.info("Created & logged in student {}, with ID {} and password {}", userName, u.getId(), userPass);
-
+		
+		
 		if (!userPhoto.isEmpty()) {
 			File f = localData.getFile("user", String.valueOf(u.getId()));
 			try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(f))) {
@@ -197,7 +200,7 @@ public class UserController {
 
 		return "redirect:/user/" + u.getId();
 	}
-
+	
 	@GetMapping("/login")
 	public String getLogin(Model model, HttpSession session) {
 		if(session.getAttribute("user") != null) 
@@ -245,7 +248,7 @@ public class UserController {
 
 	@GetMapping("/searchGame")
 	@Transactional
-	public String searchGame(HttpSession session) {
+	public String searchGame(Model model, HttpSession session) {
 		User user = (User) session.getAttribute("user");
 		user = entityManager.find(User.class, user.getId());
 		Game activeGame = user.getActiveGame();
@@ -254,7 +257,38 @@ public class UserController {
 			return "redirect:/game/";
 		}
 		
+		List<Game> games = entityManager.createNamedQuery("Game.all",Game.class).getResultList();
+		
+		Long numFinished = entityManager.createNamedQuery("Game.numFinished", Long.class).getSingleResult();
+		Long numPlaying = entityManager.createNamedQuery("Game.numPlaying", Long.class).getSingleResult();
+		Long numInLobby = entityManager.createNamedQuery("Game.numInLobby", Long.class).getSingleResult();
+		
+		model.addAttribute("numFinished", numFinished);
+		model.addAttribute("numPlaying",numPlaying);
+		model.addAttribute("numInLobby", numInLobby);
+		
 		return "buscarPartida";
 	}
 	
+	/**
+	 * Non-interactive authentication; user and password must already exist
+	 *
+	 * @param username
+	 * @param password
+	 * @param request
+	 */
+	private void doAutoLogin(String username, String password, HttpServletRequest request) {
+		try {
+			// Must be called from request filtered by Spring Security, otherwise
+			// SecurityContextHolder is not updated
+			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+			token.setDetails(new WebAuthenticationDetails(request));
+			Authentication authentication = authenticationManager.authenticate(token);
+			log.debug("Logging in with [{}]", authentication.getPrincipal());
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		} catch (Exception e) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+			log.error("Failure in autoLogin", e);
+		}
+	}
 }
