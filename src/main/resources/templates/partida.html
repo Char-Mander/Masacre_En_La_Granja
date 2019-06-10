@@ -26,6 +26,38 @@
         }
     </script>
     <div class="contenedor_principal">
+    	<div class="notas">
+    	    <h2>Ideas</h2>
+    		<textarea id="areaIdeas"></textarea>
+    		<form id="ideas">
+    			<button th:action="@{/api/chat/enviar}" method="POST" type="submit" id="compartir" class="boton">Compartir ideas</button>
+    		</form>
+    		<script>
+			window.addEventListener('load', () => {
+				const ideas = document.getElementById("areaIdeas");
+				document.getElementById("ideas").onsubmit = (e) => {
+					var text = "Mis ideas: ";
+					text += ideas.value;
+					const headers = {
+						"Content-Type": "application/json",				
+						"X-CSRF-TOKEN": config.csrf.value
+					};
+					const params = {
+						method: 'POST',
+						headers: headers,
+						body: text
+					}
+					fetch("/api/chat/enviar",params).then((response) => {
+						if (response.status == 200){ 
+							ideas.value = "";
+						}
+					});
+
+					return false;
+				}
+			});
+		</script>
+    	</div>
         <div class=center>
             <div class="playerNo" id="plaNo" th:text="${userName}">You are Player 1</div>
             <div class="playerRol" th:id="${userName}+Rol" th:text="${userRol} +${iconoRol}">VAMPIRE </div>
