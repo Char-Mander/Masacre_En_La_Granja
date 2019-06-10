@@ -74,9 +74,10 @@
         <div class="mesa">
             <ul class="cartas_y_jugadores">
                 <li class="player_card" th:each="player : ${players}">
-                    <img th:src="@{/user/{id}/photo(id=${player.id})}" class="img">
                     <div class="player" th:id="${player.name}+Player" th:text="${player.name}">Player 1</div>
-                    <div class="card" th:id="${player.name}+Card"></div>
+                    <div class="card" th:id="${player.name}+Card">
+                    	<img th:src="@{/user/{id}/photo(id=${player.id})}" class="img">
+                    </div>
                     <div class="deathInfo" th:id="${player.name}+Death">DEAD</div>
                 </li>
             </ul>
