@@ -320,9 +320,21 @@ div.chat{
     margin-top: 1vw;
 }
 
-div.chat input{
+.txt{
 	width: 100%;
     height: 150%;
     font-size: 150%;
+}
+
+.vampire{
+    float: right;
+    margin-right: 1%;
+    font-size: 120%;
+}
+
+.check {
+    margin-top: 2%;
+  width:1.2vw;
+  height:1.2vw;
 }
 
