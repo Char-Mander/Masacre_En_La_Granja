@@ -56,7 +56,7 @@ public class ApiController {
 					iwSocketHandler.sendText(u.getName(), message);
 				}
 			} else if (s.dia == 0) {
-				if (rolPropietario.equals("VAMPIRE") && s.players.get(u.getName()).equals("VAMPIRE")) {
+				if (rolPropietario.equals("VAMPIRO") && s.players.get(u.getName()).equals("VAMPIRO")) {
 					iwSocketHandler.sendText(u.getName(), message);
 				}
 			}
@@ -95,32 +95,42 @@ public class ApiController {
 		// Si nombre no coincide
 		if (!user.getName().equals(a.client))
 			return ResponseEntity.badRequest().build();
-		//Si está muerto
+		// Si está muerto
 		if (s.players.get(a.client).equals("DEAD"))
 			return ResponseEntity.badRequest().build();
 		// Si rol no coincide
 		if (!s.players.get(user.getName()).equals(a.rol) && !a.rol.equals("POPULAR_VOTE"))
 			return ResponseEntity.badRequest().build();
-		if (s.players.get(user.getName()).equals(s.players.get(a.victim)) && !a.rol.equals("POPULAR_VOTE") && !a.rol.equals("WITCH"))
+		// Si vampiro vota a vampiro por la noche
+		if (a.rol.equals(s.players.get(a.victim)) && !a.rol.equals("POPULAR_VOTE") && !a.rol.equals("BRUJA"))
 			return ResponseEntity.badRequest().build();
 		// Si la víctima no existe o esta muerta
-		boolean victimaValida = false;
-		for (User i : g.getUsers()) {
-			if (i.getName().equals(a.victim) && !s.players.get(a.victim).equals("DEAD")) {
-				victimaValida = true;
-				break;
+		if (!a.option.equals("0")) {
+			boolean victimaValida = false;
+			for (User i : g.getUsers()) {
+				if (i.getName().equals(a.victim) && !s.players.get(a.victim).equals("DEAD")) {
+					if (a.rol.equals("BRUJA") && a.option.equals("1")) {
+						for (String mueriendo : s.currentDeaths) {
+							if (a.victim.equals(mueriendo))
+								return ResponseEntity.badRequest().build();
+						}
+					} else if (a.rol.equals("BRUJA") && a.option.equals("2") && s.currentDeaths.size() == 0)
+						return ResponseEntity.badRequest().build();
+					victimaValida = true;
+					break;
+				}
 			}
+			if (!victimaValida)
+				return ResponseEntity.badRequest().build();
 		}
-		if (!victimaValida)
-			return ResponseEntity.badRequest().build();
 		// Si no ha jugado ya
 		if (s.played.get(user.getName()) == 0)
 			return ResponseEntity.badRequest().build();
 		// Si es la bruja y puede hacer esa accion
-		if (a.rol.equals("WITCH") && s.availableWitchActions != 3) {
-			if (s.availableWitchActions == 2 && a.option.equals("1"))
+		if (a.rol.equals("BRUJA") && s.availableBrujaActions != 3) {
+			if (s.availableBrujaActions == 2 && a.option.equals("1"))
 				return ResponseEntity.badRequest().build();
-			if (s.availableWitchActions == 1 && a.option.equals("2"))
+			if (s.availableBrujaActions == 1 && a.option.equals("2"))
 				return ResponseEntity.badRequest().build();
 		}
 
@@ -131,7 +141,7 @@ public class ApiController {
 		List<User> users = new ArrayList<>(g.getUsers());
 
 		String[] result = procesarJugada(jugada, g.getStatus());
-		if (result == null)
+		if (result == null) 
 			return ResponseEntity.badRequest().build();
 		String nuevoEstado = result[1];
 		log.info("NUEVO ESTADO --> " + nuevoEstado);
@@ -140,28 +150,31 @@ public class ApiController {
 		entityManager.persist(g);
 		entityManager.flush();
 		Status nuevoEstadoObj = g.getStatusObjFromString(nuevoEstado);
-		if (nuevoEstadoObj.turno.equals("WITCH") && !nuevoEstadoObj.turno.equals(turnoAnterior) && nuevoEstadoObj.availableWitchActions != 0) {
+		if (nuevoEstadoObj.turno.equals("BRUJA") && !nuevoEstadoObj.turno.equals(turnoAnterior)
+				&& nuevoEstadoObj.availableBrujaActions != 0) {
 			// TRIPLE BARRA SI O SI
 			// Hay que hacer doble escapado de las comillas
 			// uno para el string y otro para el json
-			String divWitch = "<div id=\\\"controls\\\" style=\\\"display:flex\\\"> " + "<div class=\\\"haMuerto\\\" id=\\\"haMuerto\\\">"
-					+ nuevoEstadoObj.currentDeaths.get(0) + "</div>"
-					+ "<div id=\\\"AllControls\\\" class=\\\"control\\\">"
-					+ "<div id=\\\"controlA\\\" class=\\\"control\\\">Kill</div>"
-					+ "<div id=\\\"controlB\\\" class=\\\"control\\\">Revive</div>"
-					+ "<div id=\\\"controlC\\\" class=\\\"control\\\">Pass</div>" + "</div>"
-					+ "</div>";
-			String mensaje = "{" + "\"mostrarBruja\":{ \"divWitch\":\"" + divWitch + "\", \"availableWitchActions\":"
-					+ nuevoEstadoObj.availableWitchActions + ", \"gonnaDie\": \"" + nuevoEstadoObj.currentDeaths.get(0) + "\"}}";
+			String divBruja = "<div id=\\\"controls\\\" style=\\\"display:flex\\\"> "
+					+ "<div class=\\\"haMuerto\\\" id=\\\"haMuerto\\\">"
+					+ ((nuevoEstadoObj.currentDeaths.size() > 0) ? "Va a morir: " + nuevoEstadoObj.currentDeaths.get(0)
+							: "Hoy no va a morir nadie")
+					+ "</div>" + "<div id=\\\"AllControls\\\" class=\\\"control\\\">"
+					+ "<div id=\\\"controlA\\\" class=\\\"control\\\">Matar</div>"
+					+ "<div id=\\\"controlB\\\" class=\\\"control\\\">Proteger</div>"
+					+ "<div id=\\\"controlC\\\" class=\\\"control\\\">Pasar</div>" + "</div>" + "</div>";
+			String mensaje = "{" + "\"mostrarBruja\":{ \"divBruja\":\"" + divBruja + "\", \"availableBrujaActions\":"
+					+ nuevoEstadoObj.availableBrujaActions + ", \"gonnaDie\": \""
+					+ ((nuevoEstadoObj.currentDeaths.size() > 0) ? nuevoEstadoObj.currentDeaths.get(0) : null) + "\"}}";
 			for (User u : users) {
-				if (!g.getStatusObj().players.get(u.getName()).equals("WITCH"))
+				if (!g.getStatusObj().players.get(u.getName()).equals("BRUJA"))
 					continue;
 				iwSocketHandler.sendText(u.getName(), mensaje);
 			}
-		}else if(!nuevoEstadoObj.turno.equals(turnoAnterior) || nuevoEstadoObj.gameState.equals("FINISHED")){
+		} else if (!nuevoEstadoObj.turno.equals(turnoAnterior) || nuevoEstadoObj.gameState.equals("FINISHED")) {
 			String mensaje = "{" + "\"ocultarBruja\": \"a\"}";
 			for (User u : users) {
-				if (!g.getStatusObj().players.get(u.getName()).equals("WITCH"))
+				if (!g.getStatusObj().players.get(u.getName()).equals("BRUJA"))
 					continue;
 				iwSocketHandler.sendText(u.getName(), mensaje);
 			}
@@ -170,14 +183,14 @@ public class ApiController {
 		if (nuevoEstadoObj.gameState.equals("FINISHED")) {
 			String divFin = "<div id=\\\"finalizar_partida\\\" style=\\\"display:flex\\\">"
 					+ "<form action=\\\"/user/searchGame\\\" method=\\\"GET\\\">"
-					+ "<button type=\\\"submit\\\" id=\\\"finalizar\\\" class=\\\"boton\\\">Jugar otra vez</button>" + "</form>"
-					+ "<form action=\\\"/user/\\\" method=\\\"GET\\\">"
-					+ "<button type=\\\"submit\\\" id=\\\"perfil\\\" class=\\\"boton\\\">Volver al perfil</button>" + "</form>"
-					+ "</div>";
+					+ "<button type=\\\"submit\\\" id=\\\"finalizar\\\" class=\\\"boton\\\">Jugar otra vez</button>"
+					+ "</form>" + "<form action=\\\"/user/\\\" method=\\\"GET\\\">"
+					+ "<button type=\\\"submit\\\" id=\\\"perfil\\\" class=\\\"boton\\\">Volver al perfil</button>"
+					+ "</form>" + "</div>";
 			String mensaje = "{" + "\"mostrarFinPartida\":\"" + divFin + "\"}";
 			for (User u : users) {
 				iwSocketHandler.sendText(u.getName(), mensaje);
-				if (g.getStatusObj().oldRols.get(u.getName()).equals("WITCH"))
+				if (g.getStatusObj().oldRols.get(u.getName()).equals("BRUJA"))
 					iwSocketHandler.sendText(u.getName(), "{" + "\"ocultarBruja\": \"a\"}");
 			}
 		}
@@ -199,8 +212,9 @@ public class ApiController {
 		ScriptEngine engine = manager.getEngineByName("JavaScript");
 		// read script file
 		try {
-			engine.eval(new InputStreamReader(getClass().getResourceAsStream("/static/js/partidaServidor.js"))); // relativo a
-																										// src/main/resources
+			engine.eval(new InputStreamReader(getClass().getResourceAsStream("/static/js/partidaServidor.js"))); // relativo
+																													// a
+			// src/main/resources
 		} catch (ScriptException e) {
 			log.warn("Error loading script", e);
 		}
@@ -219,25 +233,27 @@ public class ApiController {
 
 	@PostMapping("/game/getStatus")
 	@Transactional
-	public ResponseEntity<String> getGameStatus(HttpSession session){
+	public ResponseEntity<String> getGameStatus(HttpSession session) {
 
 		User user = (User) session.getAttribute("user"); // <-- este usuario no está conectado a la bd
 		user = entityManager.find(User.class, user.getId()); // <-- obtengo usuario de la BD
 
 		Game g = user.getActiveGame();
-		if(g == null) return ResponseEntity.badRequest().build();
+		if (g == null)
+			return ResponseEntity.badRequest().build();
 		return ResponseEntity.ok(g.getStatus());
 	}
 
-	//Función para comprobar que la partida puede empezar
-    @PostMapping("/lobby/startGameOk/{gameID}")
-    @Transactional
-    public ResponseEntity<?> enoughPlayers(@PathVariable String gameID){
-        //Mirar en la base de datos mágicamente para ver si está creado
-        Game game = entityManager.createNamedQuery("Game.getGame", Game.class)
-                .setParameter("gameID", Long.parseLong(gameID)).getSingleResult();
+	// Función para comprobar que la partida puede empezar
+	@PostMapping("/lobby/startGameOk/{gameID}")
+	@Transactional
+	public ResponseEntity<?> enoughPlayers(@PathVariable String gameID) {
+		// Mirar en la base de datos mágicamente para ver si está creado
+		Game game = entityManager.createNamedQuery("Game.getGame", Game.class)
+				.setParameter("gameID", Long.parseLong(gameID)).getSingleResult();
 
-        if(game.canBegin()) return ResponseEntity.status(HttpStatus.OK).build();
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
-    }
+		if (game.canBegin())
+			return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+	}
 }

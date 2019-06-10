@@ -44,13 +44,13 @@ public class Game {
 	public static String getIcon(String rol) {
 		String icon = "";
 		
-		if (rol.equals("VAMPIRE")) {
+		if (rol.equals("VAMPIRO")) {
 			icon = "\uD83E\uDDDB\u200D♂️";
-		} else if (rol.equals("FARMER")) {
+		} else if (rol.equals("GRANJERO")) {
 			icon = "\uD83D\uDC68\u200D\uD83C\uDF3E ";
-		} else if (rol.equals("WITCH")) {
+		} else if (rol.equals("BRUJA")) {
 			icon = "\uD83E\uDDD9\u200D♀️";
-		} else if (rol.equals("HUNTER")) {
+		} else if (rol.equals("CAZAVAMPIROS")) {
 			icon = "\uD83C\uDFF9";
 		} else {
 			icon = "⚰";
@@ -174,12 +174,12 @@ public class Game {
 	}
     
     public boolean canBegin() {
-        return users.size() >= 2;
+        return users.size() >= 8;
     }
 
     public void init() {
         Status st = new Status();
-		st.turno = "VAMPIRE";
+		st.turno = "VAMPIRO";
 		st.gameState = "INGAME";
         st.dia = 0;
         st.currentDeaths = new ArrayList<>();
@@ -188,7 +188,7 @@ public class Game {
         st.played = new HashMap<>();
         st.players = new HashMap<>();
 		st.oldRols = new HashMap<>();
-		st.availableWitchActions = 3;
+		st.availableBrujaActions = 3;
         
         String[] roles = initialRoles();
         Random random = new Random();
@@ -204,7 +204,7 @@ public class Game {
             
             st.players.put(user.getName(), roles[pos]);
             
-            if(roles[pos].equals("VAMPIRE")) {
+            if(roles[pos].equals("VAMPIRO")) {
             	st.played.put(user.getName(), 1);
 			} else {
             	st.played.put(user.getName(), 0);
@@ -222,17 +222,17 @@ public class Game {
         String[] roles = new String[users.size()];
         
         for(; count < 1 || count < users.size() / 4; ++count) {
-            roles[count] = "VAMPIRE";
+            roles[count] = "VAMPIRO";
         }
 
-        roles[count] = "WITCH";
+        roles[count] = "BRUJA";
 		++count;
-        //roles[count] = "HUNTER";
-        //++count;
+        roles[count] = "CAZAVAMPIROS";
+        ++count;
 
         
         for(; count < users.size(); ++count) {
-            roles[count] = "FARMER";
+            roles[count] = "GRANJERO";
         }
         
         return roles;

@@ -176,8 +176,7 @@ public class UserController {
 		entityManager.persist(u);
 		entityManager.flush();
 		log.info("Creating & logging in student {}, with ID {} and password {}", userName, u.getId(), userPass);
-
-		doAutoLogin(userName, userPassword, request);
+		
 		log.info("Created & logged in student {}, with ID {} and password {}", userName, u.getId(), userPass);
 
 		if (!userPhoto.isEmpty()) {
@@ -257,27 +256,5 @@ public class UserController {
 		
 		return "buscarPartida";
 	}
-
-	/**
-	 * Non-interactive authentication; user and password must already exist
-	 * 
-	 * @param username
-	 * @param password
-	 * @param request
-	 */
-	private void doAutoLogin(String username, String password, HttpServletRequest request) {
-		try {
-			// Must be called from request filtered by Spring Security, otherwise
-			// SecurityContextHolder is not updated
-			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-			token.setDetails(new WebAuthenticationDetails(request));
-			Authentication authentication = authenticationManager.authenticate(token);
-			log.debug("Logging in with [{}]", authentication.getPrincipal());
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		} catch (Exception e) {
-			SecurityContextHolder.getContext().setAuthentication(null);
-			log.error("Failure in autoLogin", e);
-		}
-	}
-
+	
 }

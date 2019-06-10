@@ -1,4 +1,4 @@
-var rolOrder = ["VAMPIRE", "WITCH"];
+var rolOrder = ["VAMPIRO", "BRUJA"];
 var cosasQuePasan = "";
 
 function createStatus() {
@@ -11,7 +11,7 @@ function createStatus() {
 	this.oldRols = {};
 	this.played = [];
 	this.gameState = "";
-	this.availableWitchActions = 0; //0 = Ninguna, 1 = matar, 2 = revivir, 3 = ambas
+	this.availableBrujaActions = 0; //0 = Ninguna, 1 = matar, 2 = revivir, 3 = ambas
 }
 
 function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de la partida
@@ -30,20 +30,20 @@ function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de l
 	object.gameState = oldState.gameState;
 	object.turno = oldState.turno;
 	object.oldRols = oldState.oldRols;
-	object.availableWitchActions = oldState.availableWitchActions;
+	object.availableBrujaActions = oldState.availableBrujaActions;
 
 	switch (play.rol) {
-		case 'VAMPIRE':
-			vampireMove(play, object); //Se le envía el nuevo estado al servidor
+		case 'VAMPIRO':
+			vampiroMove(play, object); //Se le envía el nuevo estado al servidor
 			break;
-		case 'HUNTER':
-			hunterMove(play, object);
+		case 'CAZAVAMPIROS':
+			cazavampirosMove(play, object);
 			break;
 		case 'POPULAR_VOTE':
 			popularMove(play, object);
 			break;
-		case 'WITCH':
-			witchMove(play, object);
+		case 'BRUJA':
+			brujaMove(play, object);
 			break;
 	}
 
@@ -60,12 +60,12 @@ function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de l
 		currentDeaths: object.currentDeaths,
 		votes: object.votation,
 		played: object.played,
-		availableWitchActions: object.availableWitchActions
+		availableBrujaActions: object.availableBrujaActions
 	};
 
 	var deaths = {};
-	for (var i in object.players){
-		if(object.players[i] == "DEAD" || object.gameState == "FINISHED"){
+	for (var i in object.players) {
+		if (object.players[i] == "DEAD" || object.gameState == "FINISHED") {
 			deaths[i] = object.oldRols[i];
 		}
 	}
@@ -83,9 +83,9 @@ function receivePlay(oldStateJSON, playJSON) //También recibirá el estado de l
 // option 0 -> no hace nada
 // option 1 -> mata al objetivo
 // option 2 -> protege al jugador víctima de los vampiros
-function witchMove(play, object) {
+function brujaMove(play, object) {
 
-	if (play.option == 1 && (object.availableWitchActions == 1 || object.availableWitchActions == 3)) {// La bruja mata
+	if (play.option == 1 && (object.availableBrujaActions == 1 || object.availableBrujaActions == 3)) {// La bruja mata
 		var victimaCorrecta = 0;
 		if (object.currentDeaths.length > 0) {
 			if (play.victim != object.currentDeaths[0]) {
@@ -94,19 +94,20 @@ function witchMove(play, object) {
 		} else {
 			victimaCorrecta = 1;
 		}
+
 		if (victimaCorrecta == 1) {
-			object.availableWitchActions = object.availableWitchActions == 3 ? 2 : 0;
+			object.availableBrujaActions = object.availableBrujaActions == 3 ? 2 : 0;
 			object.currentDeaths.push(play.victim);
-			object.logs.push("The witch invoked the powers of Hell and forced " + play.victim + " to stab their own heart! You all shall fear the Dark Lord!");
+			object.logs.push("¡La bruja ha sacrificado a su primogénito en inefable ritual y ha obligado a " + play.victim + " apuñalar su corazón! ¡Temed el poder del Ominoso!");
 		}
 	}
-	else if (play.option == 2 && (object.availableWitchActions == 2 || object.availableWitchActions == 3)) { // La bruja protege
-		object.availableWitchActions = object.availableWitchActions == 3 ? 1 : 0;
+	else if (play.option == 2 && (object.availableBrujaActions == 2 || object.availableBrujaActions == 3)) { // La bruja protege
+		object.availableBrujaActions = object.availableBrujaActions == 3 ? 1 : 0;
 		object.currentDeaths = object.currentDeaths.length == 1 ? [] : [object.currentDeaths[1]];
-		object.logs.push("The witch begged to her unholy god and protected " + play.victim + "'s soul ! Hail the Dark Lord!");
+		object.logs.push("La bruja ha quemado los huesos de sus ancestros, implorando a su dios pagano que proteja el alma de " + play.victim + ". ¡Alabad todos al Ominoso!");
 	}
 	//Sin else para que si gasta sus opciones tambien haga end nigth
-	if (play.option == 0 || object.availableWitchActions == 0) { // La bruja no hace nada
+	if (play.option == 0 || object.availableBrujaActions == 0) { // La bruja no hace nada
 		endNight(object);
 	}
 
@@ -120,71 +121,71 @@ function popularMove(play, object) {
 	if (countNumVotes(object) == countMaxVotes(object)) {
 		var i = mostVotedPlayer(object);
 		if (i == "") {
-			object.logs.push("Votation tied and there is no time to vote again...");
-		}
-		else {
+			object.logs.push("Los aldeanos se pasan el día discutiendo sin " +
+				"llegar a ningún consenso. Habéis perdido el tiempo.");
+		} else {
 			object.currentDeaths.push(i);
-			object.logs.push("The farmers decided to hang " + i);
+			object.logs.push("Los aldeanos sentencian a muerte a " + i
+				+ ". Será decapitado y luego llenarán su boca de ajos y " +
+				"estacarán su corazón (por si acaso).");
 		}
-		
+
 		startNight(object);
-		if(object.turno !== "HUNTER" && object.turno !== "VAMPIRES_WON" && object.turno !== "FARMERS_WON" && object.turno !== "TIE") {
-            object.turno = "VAMPIRE";
-        }
+		if (object.turno !== "CAZAVAMPIROS" && object.turno !== "VAMPIROS_WON" && object.turno !== "GRANJEROS_WON" && object.turno !== "TIE") {
+			object.turno = "VAMPIRO";
+		}
 		playedNextTurn(object);
 		object.votation = {};
-	}
-	else {
-		object.logs.push(play.client + " voted " + play.victim + "!");
+	} else {
+		object.logs.push(play.client + " piensa que " + play.victim + " debe morir.");
 	}
 
 }
 
-function hunterMove(play, object) {
-    //La víctima muere
+function cazavampirosMove(play, object) {
+//La víctima muere
 	object.currentDeaths.push(play.victim);
-	object.turno = 'HUNTER_SHOT';
-  
-	object.played[play.client] = 0;
-	object.logs.push(play.client + " has shot " + play.victim + "!");
+	object.turno = 'CAZAVAMPIROS_SHOT';
 
-    //El cazador muere
+	object.played[play.client] = 0;
+	object.logs.push("Con sus últimas fuerzas, " + play.client +
+		" vacía el cargador de su fiel winchester sobre " + play.victim + ".");
+
+//El cazador muere
 	object.players[play.client] = "DEAD";
 	object.currentDeaths.push(play.client);
 
-    object.logs.push("The hunter has used his last bullet...")
-    object.turno = nextRol("HUNTER", object);
-    playedNextTurn(object);
-    object.votation = {};
-
-	if (object.dia) {//Si le ha matado el pueblo, empieza la noche
+	if(object.dia == 1){
 		startNight(object);
-	}
-	else {//Si le han matado los vampiros, termina la noche
+	}else{
 		endNight(object);
 	}
 
+	playedNextTurn(object);
+	object.votation = {};
+
 }
 
-function vampireMove(play, object) {
+function vampiroMove(play, object) {
 	//Si la victima aun no ha sido votada le ponemos un 1, si ya lo ha sido le sumanos 1
 	if (object.votation[play.victim] == null) object.votation[play.victim] = 1;
 	else object.votation[play.victim]++;
 	object.played[play.client] = 0;
-	if (countNumVotes(object) == countRol("VAMPIRE", object)) {
+	if (countNumVotes(object) == countRol("VAMPIRO", object)) {
 		var i = mostVotedPlayer(object);
 		if (i == "") {
-			object.logs.push("Vampires couldn't decide who to kill!");
-		}
-		else {
+			object.logs.push("Los vampiros han sido demasiado sibaritas esta" +
+				"noche (parece que hoy ayunarán).");
+		} else {
 			object.currentDeaths.push(i);
+			object.logs.push(play.victim + ", puedes correr, puedes suplicar, puedes " +
+				"tratar inútilmente de esconderte, pero no escaparás de tu destino. " +
+				"Los vampiros te acechan y cada vez los oyes más cerca. Reza lo que sepas.");
 		}
-		object.logs.push("Vampires chose " + play.victim + " as their prey...")
-		object.turno = nextRol("VAMPIRE", object);
+		object.turno = nextRol("VAMPIRO", object);
 		playedNextTurn(object);
 		object.votation = {};
 	}
-
 }
 
 function mostVotedPlayer(object) {
@@ -225,7 +226,7 @@ function nextRol(rol, object) {
 		while (j < rolOrder.length) {
 			if (countRol(rolOrder[j], object) > 0) {
 				// si la bruja ya no puede jugar mas nos la saltamos
-				if(rolOrder[j] == "WITCH" && object.availableWitchActions == 0){
+				if (rolOrder[j] == "BRUJA" && object.availableBrujaActions == 0) {
 					j++;
 					continue;
 				}
@@ -241,42 +242,47 @@ function nextRol(rol, object) {
 function endNight(object) {
 	processDeaths(object);
 
-	if (object.turno == "FARMERS_WON" || object.turno == "VAMPIRES_WON" || object.turno == "TIE") {
+	if (object.turno == "GRANJEROS_WON" || object.turno == "VAMPIROS_WON" || object.turno == "TIE") {
 		return object.turno;
 	}
 
-	if (object.turno != "HUNTER") {
+	if (object.turno != "CAZAVAMPIROS") {
 		object.dia = 1;
 		object.turno = "POPULAR_VOTATION";
-		for(var i in object.players){
-			if(object.players[i] != "DEAD"){
+		for (var i in object.players) {
+			if (object.players[i] != "DEAD") {
 				object.played[i] = 1;
 			}
 		}
-		object.logs.push("The farmers wake up");
+		object.logs.push("Los primeros rayos de sol se asoman por el horizonte " +
+			"y los aldeanos pueden seguir un día más con sus miserables vidas.");
 	}
-    else return "HUNTER";
+	else return "CAZAVAMPIROS";
 
 	return "POPULAR_VOTATION";
 }
 
 function startNight(object) {
 	processDeaths(object);
-	if (object.turno != "HUNTER" && object.turno != "FARMERS_WON" && object.turno != "VAMPIRES_WON" && object.turno != "TIE") {
+	if (object.turno != "CAZAVAMPIROS" && object.turno != "GRANJEROS_WON" && object.turno != "VAMPIROS_WON" && object.turno != "TIE") {
 		object.dia = 0;
-		object.logs.push("The farmers go to bed...");
+		object.logs.push("El ocaso se acerca y con él la sed de sangre de los " +
+			"vampiros. Rezad vuestras plegarias.");
 		object.turno = rolOrder[0];
 	}
 }
 
 function processDeaths(object) {
 	for (var i in object.currentDeaths) {
-		if (object.players[object.currentDeaths[i]] == "HUNTER") {//Si el cazador muere, será su turno
-			object.logs.push(object.currentDeaths[i] + " was the Hunter, and wants retribution!");
-			object.turno = "HUNTER";
+		if (object.players[object.currentDeaths[i]] == "CAZAVAMPIROS") {//Si el cazador muere, será su turno
+			object.logs.push("¡Idiotas! " + object.currentDeaths[i] + " era un " +
+				"famoso cazavampiros y no morirá sin oponer resistencia hasta su " +
+				"último aliento." );
+			object.turno = "CAZAVAMPIROS";
+			playedNextTurn(object);
 			object.currentDeaths.splice(i, 1);
 		} else {
-			object.logs.push((object.currentDeaths[i] + " has died!"));
+			object.logs.push((object.currentDeaths[i] + " ha muerto."));
 			//El jugador muere
 			object.players[object.currentDeaths[i]] = "DEAD";
 		}
@@ -286,31 +292,32 @@ function processDeaths(object) {
 }
 
 function checkWin(object)//Comprueba si un bando ha ganado
-{   var hunterAlive = false;
-	var vampiresLeft = 0;
-	var farmersLeft = 0;
+{
+	var cazavampirosAlive = false;
+	var vampirosLeft = 0;
+	var granjerosLeft = 0;
 	for (var i in object.players) {
-		if (object.players[i] == "VAMPIRE") {
-			vampiresLeft++;
+		if (object.players[i] == "VAMPIRO") {
+			vampirosLeft++;
 		}
 		else if (object.players[i] != "DEAD") {
-            if(object.players[i] == "HUNTER"){
-                hunterAlive = true;
-            }
-			farmersLeft++;
-			cosasQuePasan += "Ha entrado en farmersLeft '\n'";
+			if (object.players[i] == "CAZAVAMPIROS") {
+				cazavampirosAlive = true;
+			}
+			granjerosLeft++;
+			cosasQuePasan += "Ha entrado en granjerosLeft '\n'";
 		}
 	}
 
-	if (vampiresLeft == 0) {
-		object.turno = "FARMERS_WON";
+	if (vampirosLeft == 0) {
+		object.turno = "GRANJEROS_WON";
 		object.gameState = "FINISHED";
-	} else if(hunterAlive && farmersLeft == 1 && vampiresLeft == 1){
-        object.turno = "TIE";
-        object.gameState = "FINISHED";
-    }
-	else if (farmersLeft == 0) {
-		object.turno = "VAMPIRES_WON";
+	} else if (cazavampirosAlive && granjerosLeft == 1 && vampirosLeft == 1) {
+		object.turno = "TIE";
+		object.gameState = "FINISHED";
+	}
+	else if (granjerosLeft == 0) {
+		object.turno = "VAMPIROS_WON";
 		object.gameState = "FINISHED";
 	}
 
@@ -349,5 +356,8 @@ function playedNextTurn(object) {
 		if ((object.players[i] == object.turno)
 			|| (object.turno == "POPULAR_VOTATION" && object.players[i] != "DEAD"))
 			object.played[i] = 1;
+		else {
+			object.played[i] = 0;
+		}
 	}
 }

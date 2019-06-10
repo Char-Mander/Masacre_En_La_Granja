@@ -18,7 +18,7 @@ public class Status {
     public List<String> currentDeaths; //Esto es para modelo.js // lista de nombres de los que estan muriendo
     public Map<String, Integer> votes; //Esto es para modelo.js // lista de nombres votados con recuento de votos
     public Map<String, Integer> played; // contiene todos los jugadores. Se mantiene a 0 (jugado). Se pone a 1 cuando se inicia un turno solo a los que pueden jugar.
-    public Integer availableWitchActions; //0 = Ninguna, 1 = matar, 2 = revivir, 3 = ambas
+    public Integer availableBrujaActions; //0 = Ninguna, 1 = matar, 2 = revivir, 3 = ambas
 
     public Acciones accionesStringToObj(String strAccion){
         ObjectMapper mapper = new ObjectMapper();

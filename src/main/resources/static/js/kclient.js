@@ -12,6 +12,7 @@ function removePlayerFromLobby(name) {
 function receiveChatMessage(message) {
 	const lineOutput = document.getElementById("recibido");
 	lineOutput.value = lineOutput.value + '\n' + message.propietario + ": " + message.mensaje;
+	lineOutput.scrollTop = lineOutput.scrollHeight;
 }
 
 const handleNewPlayer = (name) => {
@@ -37,9 +38,9 @@ const handleRemovePlayer = (name) => {
 
 const handleMostrarBruja = (obj) => {
 	const miembros = document.getElementsByClassName("center");
-	miembros[0].innerHTML = miembros[0].innerHTML + obj.divWitch;
+	miembros[0].innerHTML = miembros[0].innerHTML + obj.divBruja;
 
-	if (obj.availableWitchActions == 1 || obj.availableWitchActions == 3) {
+	if (obj.availableBrujaActions == 1 || obj.availableBrujaActions == 3) {
 		document.getElementById("controlA").addEventListener("click", function () {
 			option = 1;
 			document.getElementById("controlA").style.backgroundColor = '#1D1C1C';
@@ -48,7 +49,7 @@ const handleMostrarBruja = (obj) => {
 		document.getElementById("controlA").style.backgroundColor = '#1D1C1C';
 	}
 
-	if (obj.availableWitchActions == 2 || obj.availableWitchActions == 3) {
+	if (obj.availableBrujaActions == 2 || obj.availableBrujaActions == 3) {
 		document.getElementById("controlB").addEventListener("click", function () {
 			option = 2;
 			document.getElementById("controlB").style.backgroundColor = '#1D1C1C';

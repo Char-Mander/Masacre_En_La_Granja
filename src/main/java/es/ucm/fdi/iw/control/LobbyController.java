@@ -69,14 +69,27 @@ public class LobbyController {
     @GetMapping("/{idGame}")
     @Transactional
     public String showLobby(Model model, @PathVariable String idGame) {
-        Game game = entityManager.find(Game.class, Long.parseLong(idGame));
+        long longID = -1;
+        
+        try{
+            longID = Long.parseLong(idGame);
+        } catch(NumberFormatException ignored){
+        }
+        
+        Game game = entityManager.find(Game.class, longID);
         return getLobby(model, game);
     }
 
     @PostMapping("/{idGame}")
     @Transactional
     public String showLobbyPost(Model model, @PathVariable String idGame) {
-        Game game = entityManager.find(Game.class, Long.parseLong(idGame));
+        long longID = -1;
+    
+        try {
+            longID = Long.parseLong(idGame);
+        } catch(NumberFormatException ignored){ }
+    
+        Game game = entityManager.find(Game.class, longID);
         return getLobby(model, game);
     }
     
@@ -97,7 +110,14 @@ public class LobbyController {
     @GetMapping("/{idGame}/join")
     @Transactional
     public String joinLobby(Model model, HttpSession session, @PathVariable String idGame) {
-        Game game = entityManager.find(Game.class, Long.parseLong(idGame));
+        long longID = -1;
+    
+        try{
+            longID = Long.parseLong(idGame);
+        } catch(NumberFormatException ignored){
+        }
+    
+        Game game = entityManager.find(Game.class, longID);
 
         if (game == null) {
             model.addAttribute("errorMessage", "¡Esa partida no existe!");

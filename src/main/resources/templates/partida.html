@@ -26,15 +26,6 @@
         }
     </script>
     <div class="contenedor_principal">
-        <div class="notas">
-            <h2> Notas de la partida </h2>
-            <ul class="cartas_y_jugadores">
-                <li class="player_card" th:each="player : ${players}">
-                    <div class="player" th:id="${player}" th:text="${player}">Player 1</div>
-                    <textarea> </textarea>
-                </li>
-            </ul>
-        </div>
         <div class=center>
             <div class="playerNo" id="plaNo" th:text="${userName}">You are Player 1</div>
             <div class="playerRol" th:id="${userName}+Rol" th:text="${userRol} +${iconoRol}">VAMPIRE </div>
