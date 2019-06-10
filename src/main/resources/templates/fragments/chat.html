@@ -47,9 +47,11 @@
 					});
                     }
                     }
+                    else{
                     fetch("/api/chat/enviar",params).then((response) => {
 						if (response.status == 200) lineInput.value = "";
 					});
+                    }
                     
 
 					return false;
