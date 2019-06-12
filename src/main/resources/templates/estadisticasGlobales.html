@@ -27,7 +27,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="item: ${top10}" onclick="location='estadisticas-jugador.html'">
+					<tr th:each="item: ${top10}">
 						<td th:text="${item.pos}">0</td>
 						<td th:text="${item.name}">Josito</td>
 						<td th:text="${item.wins}">74</td>
