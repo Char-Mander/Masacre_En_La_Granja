@@ -29,8 +29,9 @@ function cargarPartida() {
                 console.log(status.played);
                 turno = status.turno;
                 
-                if(status.players[clientPlayer] =="VAMPIRO"){
-                    for(var p in players){
+                console.log("Antes del mostrar vampiros");
+                if(status.players[clientPlayer] == "VAMPIRO"){
+                    for(var p in status.players){
                         if(p != clientPlayer && status.players[p] == "VAMPIRO"){
                             logEntry(p + " es un camarada chupasangre");
                         }
@@ -283,6 +284,7 @@ function noteEntry(message) {
 }
 
 function printLogs(logs) {
+	console.log("Entrada en printLogs con logs: " + logs);
     for (i = 0; i < logs.length; i++) {
         logEntry(logs[i]);
     }
