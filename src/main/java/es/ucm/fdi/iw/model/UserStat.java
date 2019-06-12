@@ -1,9 +1,6 @@
 package es.ucm.fdi.iw.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.*;
 

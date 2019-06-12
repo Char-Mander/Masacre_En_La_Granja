@@ -14,7 +14,6 @@ public class Stat {
 	
 	private String name;
 	private String description;
-	private String code;
 
 	@OneToMany
 	@JoinColumn(name="stat_id")
@@ -42,14 +41,6 @@ public class Stat {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public List<UserStat> getUserStats() {
