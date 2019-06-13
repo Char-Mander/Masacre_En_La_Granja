@@ -15,7 +15,6 @@ import es.ucm.fdi.iw.model.UserStat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.engine.spi.SessionImplementor;
-import org.omg.IOP.CodecOperations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
